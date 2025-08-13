@@ -1,13 +1,20 @@
 // Sidebar.tsx
 import React, { useState } from 'react';
+import UserInfo from './UserInfo';
+import DetailsButton from '../buttons/DetailsButton';
+import DetailsForm from '../../forms/detailsForm/DetailsForm';
+import LoginForm from '../../forms/logInForm/LogInForm'; // importuj login formu
 
 interface User {
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
+  dateOfBirth: string;
+  phoneNumber: string;
   type: 'guest' | 'regular' | 'premium';
   imgSrc: string;
-  messagesLeft:number;
+  messagesLeft: number;
 }
 
 interface SidebarProps {
@@ -16,17 +23,29 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(true);
-
-  const labelColor = user.type === 'premium' ? '#FFD700' : '#007BFF';
-
-  const toggleSidebar = () => {
-    setIsOpen(prev => !prev);
-  };
-
   const [signedIn, setSignedIn] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+
+  const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const handleAuthClick = () => {
-    setSignedIn(prev => !prev);
+    if (signedIn) {
+      // Log out
+      setSignedIn(false);
+      setShowDetails(false);
+    } else {
+      // Otvori login formu
+      setShowLoginForm(true);
+    }
+  };
+
+  const handleDetailsClick = () => setShowDetails(true);
+  const handleCloseDetails = () => setShowDetails(false);
+
+  const handleLoginClose = () => {
+    setShowLoginForm(false);
+    setSignedIn(true); // posle logovanja, oznaci da je korisnik ulogovan
   };
 
   return (
@@ -34,54 +53,48 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       <aside
         style={{
           ...styles.sidebar,
-          width: isOpen ? 250 : 0,
-          overflowX: 'hidden', // Hide contents when closed
+          width: isOpen ? 270 : 0,
+          overflowX: 'hidden',
         }}
       >
-       <div style={styles.topBar}>
-          {/* Sign In / Log Out button */}
+        <div style={styles.topBar}>
           <button
             onClick={handleAuthClick}
             style={styles.authButton}
-            aria-label={signedIn ? 'Log out' : 'Sign in'}
+            aria-label={signedIn ? 'Log out' : 'Log in'}
+            type="button"
           >
-            {signedIn ? 'Log Out' : 'Sign In'}
+            {signedIn ? 'Log Out' : 'Log In'}
           </button>
         </div>
 
-        <div style={{ ...styles.profileContainer, opacity: isOpen ? 1 : 0 }}>
-          <img
-            src={user.imgSrc}
-            alt={`${user.firstName} ${user.lastName}`}
-            style={styles.profileImage}
-          />
-          <h2 style={styles.name}>{user.firstName} {user.lastName}</h2>
-          <p style={styles.email}>{user.email}</p>
-                    {/* No. messages left label */}
-          <div style={styles.messagesLeftLabel}>
-            <strong>No. messages left:</strong> {user.messagesLeft}
+        <div style={styles.userInfoWrapper}>
+          <div
+            style={{
+              opacity: isOpen ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <UserInfo {...user} />
+            {signedIn && <DetailsButton onClick={handleDetailsClick} />}
           </div>
-          <span style={{ ...styles.userTypeLabel, backgroundColor: labelColor }}>
-            {user.type.toUpperCase()}
-          </span>
         </div>
 
-        {/* Toggle button when sidebar is open */}
         {isOpen && (
           <button
             onClick={toggleSidebar}
             aria-label="Close sidebar"
-            style={{
-              ...styles.toggleButton,
-              right: -10,
-            }}
+            style={{ ...styles.toggleButton, right: -10 }}
           >
             &lt;
           </button>
         )}
       </aside>
 
-      {/* Toggle button when sidebar is closed */}
       {!isOpen && (
         <button
           onClick={toggleSidebar}
@@ -97,6 +110,19 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           &gt;
         </button>
       )}
+
+      {showDetails && signedIn && (
+        <DetailsForm user={user} onClose={handleCloseDetails} />
+      )}
+
+      {showLoginForm && (
+        <>
+          <div style={styles.overlay} onClick={() => setShowLoginForm(false)} />
+          <div style={styles.loginWrapper}>
+            <LoginForm onClose={handleLoginClose} />
+          </div>
+        </>
+      )}
     </>
   );
 };
@@ -106,15 +132,34 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'fixed',
     left: 0,
     top: 40,
-    height: '100vh',
-    backgroundColor: '#edc9e9ff', //'#f5f5f5'
+    height: 'calc(100vh - 40px)',
+    backgroundColor: '#edc9e9ff',
     boxShadow: '2px 0px 5px rgba(0,0,0,0.1)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: '0',
+    paddingTop: 0,
     boxSizing: 'border-box',
     transition: 'width 0.3s ease',
+    paddingBottom: 20,
+    overflowY: 'auto',
+    zIndex: 1000,
+  },
+  topBar: {
+    width: '100%',
+    padding: '10px 0 10px 10px',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #ccc',
+    flexShrink: 0,
+  },
+  userInfoWrapper: {
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   authButton: {
     backgroundColor: '#cd55abff',
@@ -128,60 +173,16 @@ const styles: Record<string, React.CSSProperties> = {
     userSelect: 'none',
     transition: 'background-color 0.3s ease',
   },
-  profileContainer: {
-    marginTop: 'auto',
-    marginBottom: 'auto',
-    textAlign: 'center',
-    width: '80%',
-    transition: 'opacity 0.3s ease',
-    userSelect: 'none',
-  },
-  profileImage: {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    objectFit: 'cover',
-    border: '3px solid #007BFF',
-    marginBottom: '20px',
-  },
-  name: {
-    margin: '0 0 8px 0',
-    fontSize: '24px',
-    fontWeight: 600,
-    color: '#333',
-  },
-  email: {
-    margin: '0 0 15px 0',
-    fontSize: '14px',
-    color: '#666',
-    wordBreak: 'break-word',
-  },
-    messagesLeftLabel: {
-    marginBottom: 12,
-    fontSize: 14,
-    color: '#444',
-    userSelect: 'none',
-  },
-  userTypeLabel: {
-    display: 'inline-block',
-    padding: '6px 12px',
-    borderRadius: '18px',
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: '12px',
-    userSelect: 'none',
-  },
   toggleButton: {
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
-    width: '40px',
-    height: '40px',
-    //borderRadius: '50%',
+    width: 40,
+    height: 40,
     border: 'none',
     backgroundColor: '#cd55abff',
     color: 'white',
-    fontSize: '20px',
+    fontSize: 20,
     cursor: 'pointer',
     userSelect: 'none',
     display: 'flex',
@@ -189,6 +190,24 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     boxShadow: '0px 2px 6px rgba(0,0,0,0.3)',
     zIndex: 1000,
+  },
+  overlay: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 2000,
+  },
+  loginWrapper: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 2100,
+    width: '100%',
+    maxWidth: 400,
+    padding: 16,
+    boxSizing: 'border-box',
   },
 };
 
