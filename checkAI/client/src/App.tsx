@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Sidebar from './components/sidebar/Sidebar';
 import LoginForm from './forms/logInForm/LogInForm';
+import SignInForm from './forms/signInForm/SignInForm';
 
 const user = {
   firstName: 'John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
-  password:'123',
+  password: '123',
   dateOfBirth: '1.1.2000',
   phoneNumber: '063123123',
   type: 'premium' as const,
@@ -16,6 +17,18 @@ const user = {
 
 function App() {
   const [showLogin, setShowLogin] = useState(true);
+  const [showSignInForm, setShowSignInForm] = useState(false);
+
+  // Funkcija za otvaranje SignIn forme iz Login forme
+  const openSignInForm = () => {
+    setShowLogin(false);
+    setShowSignInForm(true);
+  };
+
+  // Funkcija za zatvaranje SignIn forme
+  const closeSignInForm = () => {
+    setShowSignInForm(false);
+  };
 
   return (
     <>
@@ -23,15 +36,30 @@ function App() {
         <Sidebar user={user} />
       </div>
 
+      {(showLogin || showSignInForm) && (
+        <div
+          style={styles.overlay}
+          // Klik na overlay zatvara otvorenu formu
+          onClick={() => {
+            if (showLogin) setShowLogin(false);
+            if (showSignInForm) setShowSignInForm(false);
+          }}
+        />
+      )}
+
       {showLogin && (
-        <>
-          {/* Overlay mutna pozadina */}
-          <div style={styles.overlay} />
-          {/* Login forma na sredini */}
-          <div style={styles.loginWrapper}>
-            <LoginForm onClose={() => setShowLogin(false)} />
-          </div>
-        </>
+        <div style={styles.loginWrapper}>
+          <LoginForm
+            onClose={() => setShowLogin(false)}
+            onRegisterClick={openSignInForm} // Prosleđujemo callback za otvaranje sign-in forme
+          />
+        </div>
+      )}
+
+      {showSignInForm && (
+        <div style={styles.loginWrapper}>
+          <SignInForm onClose={closeSignInForm} />
+        </div>
       )}
     </>
   );
@@ -52,10 +80,10 @@ const styles: Record<string, React.CSSProperties> = {
     transform: 'translate(-50%, -50%)',
     zIndex: 10000,
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 900, // Povećano sa 400 na 900 da stane široka SignIn forma
     padding: 16,
     boxSizing: 'border-box',
-  }
+  },
 };
 
 export default App;

@@ -1,9 +1,9 @@
-// Sidebar.tsx
 import React, { useState } from 'react';
 import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
-import LoginForm from '../../forms/logInForm/LogInForm'; // importuj login formu
+import LoginForm from '../../forms/logInForm/LogInForm';
+import SignInForm from '../../forms/signInForm/SignInForm';
 
 interface User {
   firstName: string;
@@ -22,21 +22,21 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Uvek skriven kad se pokrene
   const [signedIn, setSignedIn] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showSignInForm, setShowSignInForm] = useState(false);
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const handleAuthClick = () => {
     if (signedIn) {
-      // Log out
       setSignedIn(false);
       setShowDetails(false);
     } else {
-      // Otvori login formu
       setShowLoginForm(true);
+      setIsOpen(false); // Sidebar ostaje zatvoren prilikom otvaranja forme
     }
   };
 
@@ -45,8 +45,19 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
   const handleLoginClose = () => {
     setShowLoginForm(false);
-    setSignedIn(true); // posle logovanja, oznaci da je korisnik ulogovan
+    setSignedIn(true);
   };
+
+  const handleRegisterClick = () => {
+    setShowLoginForm(false);
+    setShowSignInForm(true);
+  };
+
+  const handleSignInClose = () => {
+    setShowSignInForm(false);
+  };
+
+  const showOverlay = !isOpen || showLoginForm || showSignInForm;
 
   return (
     <>
@@ -115,13 +126,27 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         <DetailsForm user={user} onClose={handleCloseDetails} />
       )}
 
+      {showOverlay && (
+        <div
+          style={styles.overlay}
+          onClick={() => {
+            if (showLoginForm) setShowLoginForm(false);
+            else if (showSignInForm) setShowSignInForm(false);
+            else if (!isOpen) setIsOpen(true);
+          }}
+        />
+      )}
+
       {showLoginForm && (
-        <>
-          <div style={styles.overlay} onClick={() => setShowLoginForm(false)} />
-          <div style={styles.loginWrapper}>
-            <LoginForm onClose={handleLoginClose} />
-          </div>
-        </>
+        <div style={styles.loginWrapper}>
+          <LoginForm onClose={handleLoginClose} onRegisterClick={handleRegisterClick} />
+        </div>
+      )}
+
+      {showSignInForm && (
+        <div style={styles.loginWrapper}>
+          <SignInForm onClose={handleSignInClose} />
+        </div>
       )}
     </>
   );

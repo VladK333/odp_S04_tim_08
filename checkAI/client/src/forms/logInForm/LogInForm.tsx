@@ -1,21 +1,21 @@
-// src/forms/login/LoginForm.tsx
+// src/forms/logInForm/LogInForm.tsx
 import React from 'react';
 
 interface LoginFormProps {
   onClose: () => void;
+  onRegisterClick: () => void;  // callback za otvaranje sign in forme
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Bez prave logike, samo zatvori formu na pritisak Log In
-    onClose();
+    onClose(); // zatvori login formu na Log In
   };
 
   return (
-<form style={styles.form} noValidate onSubmit={handleSubmit}>
+    <form style={styles.form} noValidate onSubmit={handleSubmit}>
       <h2 style={styles.title}>Login</h2>
-      
+
       <label htmlFor="email" style={styles.label}>
         Email
       </label>
@@ -47,7 +47,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose }) => {
       </button>
 
       <div style={styles.options}>
-        <button type="button" style={styles.optionButton}>
+        <button
+          type="button"
+          style={styles.optionButton}
+          onClick={onRegisterClick}  // otvara sign in formu
+        >
           Register
         </button>
         <span style={styles.separator}>|</span>
