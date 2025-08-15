@@ -5,6 +5,7 @@ import CreateButton from '../../components/buttons/CreateButton';
 
 interface SignInFormProps {
   onClose: () => void;
+  onBackToLogin: () => void;  // callback za povratak na login formu
 }
 
 interface FormValues {
@@ -27,7 +28,7 @@ interface FormErrors {
   profileImage?: string;
 }
 
-const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
+const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
   const [values, setValues] = useState<FormValues>({
     firstName: '',
     lastName: '',
@@ -92,11 +93,15 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
     return newErrors;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({
       ...prev,
       [name]: value,
+    }));
+    setErrors(prev => ({
+      ...prev,
+      [name]: undefined,
     }));
   };
 
@@ -116,6 +121,10 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
     } else {
       setImagePreviewUrl(null);
     }
+    setErrors(prev => ({
+      ...prev,
+      profileImage: undefined,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -131,6 +140,16 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
 
   return (
     <form style={styles.form} noValidate onSubmit={handleSubmit}>
+      {/* Back arrow button top-left */}
+      <button
+        type="button"
+        onClick={onBackToLogin}
+        aria-label="Back to login"
+        style={styles.backButton}
+      >
+        ←
+      </button>
+
       <h2 style={styles.title}>Create Account</h2>
 
       <div style={styles.contentWrapper}>
@@ -167,7 +186,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
 
         {/* Right side: Two columns of inputs */}
         <div style={styles.fieldsContainer}>
-          {/* First column: firstName, email, phoneNumber */}
+          {/* First column */}
           <div style={styles.column}>
             <label htmlFor="firstName" style={styles.label}>
               First Name
@@ -177,7 +196,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               name="firstName"
               type="text"
               placeholder="Enter your first name"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.firstName ? '#d32f2f' : '#d252bdff'}}
               value={values.firstName}
               onChange={handleChange}
               autoComplete="given-name"
@@ -198,7 +217,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               name="email"
               type="email"
               placeholder="Enter your email"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.email ? '#d32f2f' : '#d252bdff'}}
               value={values.email}
               onChange={handleChange}
               autoComplete="email"
@@ -219,7 +238,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               name="phoneNumber"
               type="tel"
               placeholder="Enter your phone number"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.phoneNumber ? '#d32f2f' : '#d252bdff'}}
               value={values.phoneNumber}
               onChange={handleChange}
               autoComplete="tel"
@@ -233,7 +252,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
             )}
           </div>
 
-          {/* Second column: lastName, password, dateOfBirth */}
+          {/* Second column */}
           <div style={styles.column}>
             <label htmlFor="lastName" style={styles.label}>
               Last Name
@@ -243,7 +262,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               name="lastName"
               type="text"
               placeholder="Enter your last name"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.lastName ? '#d32f2f' : '#d252bdff'}}
               value={values.lastName}
               onChange={handleChange}
               autoComplete="family-name"
@@ -264,7 +283,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               name="password"
               type="password"
               placeholder="Enter your password"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.password ? '#d32f2f' : '#d252bdff'}}
               value={values.password}
               onChange={handleChange}
               autoComplete="new-password"
@@ -284,7 +303,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
               id="dateOfBirth"
               name="dateOfBirth"
               type="date"
-              style={styles.input}
+              style={{...styles.input, borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff'}}
               value={values.dateOfBirth}
               onChange={handleChange}
               aria-invalid={!!errors.dateOfBirth}
@@ -307,6 +326,17 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose }) => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    background: 'transparent',
+    border: 'none',
+    fontSize: 24,
+    cursor: 'pointer',
+    color: '#d252bdff',
+    userSelect: 'none',
+  },
   form: {
     maxWidth: 1000,
     width: '100%',
@@ -318,12 +348,13 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     boxSizing: 'border-box',
+    position: 'relative',
   },
   title: {
     marginBottom: 32,
     fontSize: 32,
     fontWeight: '700',
-    color: '#6a2c70',
+    color: '#d252bdff',
     textAlign: 'center',
   },
   contentWrapper: {
@@ -342,18 +373,18 @@ const styles: Record<string, React.CSSProperties> = {
     height: 140,
     borderRadius: '50%',
     objectFit: 'cover',
-    border: '2.5px solid #cd55abff',
+    border: '2.5px solid #d252bdff',
     marginBottom: 12,
   },
   imagePlaceholder: {
     width: 140,
     height: 140,
     borderRadius: '50%',
-    border: '2.5px dashed #cd55abff',
+    border: '2.5px dashed #d252bdff',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    color: '#cd55abff',
+    color: '#d252bdff',
     fontSize: 14,
     marginBottom: 12,
     textAlign: 'center',
@@ -361,14 +392,14 @@ const styles: Record<string, React.CSSProperties> = {
   },
   fileLabel: {
     cursor: 'pointer',
-    backgroundColor: '#6a2c70',
+    backgroundColor: '#d252bdff',
     color: 'white',
     padding: '8px 14px',
     borderRadius: 8,
     fontWeight: 600,
     fontSize: 14,
     userSelect: 'none',
-    boxShadow: '0 3px 10px rgba(106,44,112,0.8)',
+    boxShadow: '0 3px 10px rgba(231, 35, 201, 0.8)',
     transition: 'background-color 0.3s ease',
     textAlign: 'center',
     width: '100%',
@@ -396,7 +427,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 22,
     padding: '14px 18px',
     borderRadius: 10,
-    border: '1.5px solid #cd55abff',
+    border: '1.5px solid #d252bdff',
     fontSize: 16,
     outline: 'none',
     transition: 'border-color 0.3s ease',

@@ -1,7 +1,9 @@
+// App.tsx
 import React, { useState } from 'react';
 import Sidebar from './components/sidebar/Sidebar';
 import LoginForm from './forms/logInForm/LogInForm';
 import SignInForm from './forms/signInForm/SignInForm';
+import Navbar from './components/navbar/Navbar';
 
 const user = {
   firstName: 'John',
@@ -18,47 +20,56 @@ const user = {
 function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [showSignInForm, setShowSignInForm] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true); // primer ako hoćeš kontrolu sidebara
 
-  // Funkcija za otvaranje SignIn forme iz Login forme
+
   const openSignInForm = () => {
     setShowLogin(false);
     setShowSignInForm(true);
   };
 
-  // Funkcija za zatvaranje SignIn forme
   const closeSignInForm = () => {
     setShowSignInForm(false);
   };
 
+  const closeLoginForm = () => {
+    setShowLogin(false);
+  };
+
+  const backToLogin = () => {
+    setShowSignInForm(false);
+    setShowLogin(true);
+  };
+
+  const handleNewChat = () => {
+  // Ovde možeš da resetuješ stanje chat-a ili prikazuješ novi chat
+  console.log('New Chat clicked');
+  // Primer: sakrij forme ako su otvorene
+  setShowLogin(false);
+  setShowSignInForm(false);
+};
+
   return (
     <>
-      <div style={{ display: 'flex' }}>
-        <Sidebar user={user} />
-      </div>
+     <Navbar onNewChatClick={handleNewChat} />
+      <Sidebar user={user} />
 
+      {/* Overlay prikazan samo dok je neka forma otvorena */}
       {(showLogin || showSignInForm) && (
-        <div
-          style={styles.overlay}
-          // Klik na overlay zatvara otvorenu formu
-          onClick={() => {
-            if (showLogin) setShowLogin(false);
-            if (showSignInForm) setShowSignInForm(false);
-          }}
-        />
+        <div style={styles.overlay} />
       )}
 
+      {/* Login forma */}
       {showLogin && (
-        <div style={styles.loginWrapper}>
-          <LoginForm
-            onClose={() => setShowLogin(false)}
-            onRegisterClick={openSignInForm} // Prosleđujemo callback za otvaranje sign-in forme
-          />
+        <div style={styles.formWrapper}>
+          <LoginForm onClose={closeLoginForm} onRegisterClick={openSignInForm} />
         </div>
       )}
 
+      {/* SignIn forma */}
       {showSignInForm && (
-        <div style={styles.loginWrapper}>
-          <SignInForm onClose={closeSignInForm} />
+        <div style={styles.formWrapper}>
+          <SignInForm onClose={closeSignInForm} onBackToLogin={backToLogin} />
         </div>
       )}
     </>
@@ -73,14 +84,14 @@ const styles: Record<string, React.CSSProperties> = {
     backdropFilter: 'blur(4px)',
     zIndex: 9999,
   },
-  loginWrapper: {
+  formWrapper: {
     position: 'fixed',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 10000,
-    width: '100%',
-    maxWidth: 900, // Povećano sa 400 na 900 da stane široka SignIn forma
+    width: '90%',
+    maxWidth: 900,
     padding: 16,
     boxSizing: 'border-box',
   },

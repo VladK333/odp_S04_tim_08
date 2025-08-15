@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       <aside
         style={{
           ...styles.sidebar,
-          width: isOpen ? 270 : 0,
+          width: isOpen ? 300 : 0,
           overflowX: 'hidden',
         }}
       >
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           onClick={() => {
             if (showLoginForm) setShowLoginForm(false);
             else if (showSignInForm) setShowSignInForm(false);
-            else if (!isOpen) setIsOpen(true);
+            //else if (!isOpen) setIsOpen(true);
           }}
         />
       )}
@@ -144,10 +144,16 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       )}
 
       {showSignInForm && (
-        <div style={styles.loginWrapper}>
-          <SignInForm onClose={handleSignInClose} />
-        </div>
-      )}
+  <div style={styles.loginWrapper}>
+    <SignInForm
+      onClose={handleSignInClose}
+      onBackToLogin={() => {
+        setShowSignInForm(false);
+        setShowLoginForm(true);
+      }}
+    />
+  </div>
+)}
     </>
   );
 };
@@ -156,7 +162,7 @@ const styles: Record<string, React.CSSProperties> = {
   sidebar: {
     position: 'fixed',
     left: 0,
-    top: 40,
+    top: 50,
     height: 'calc(100vh - 40px)',
     backgroundColor: '#edc9e9ff',
     boxShadow: '2px 0px 5px rgba(0,0,0,0.1)',
@@ -176,7 +182,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'flex-start',
     boxSizing: 'border-box',
-    borderBottom: '1px solid #ccc',
     flexShrink: 0,
   },
   userInfoWrapper: {
@@ -214,13 +219,13 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0px 2px 6px rgba(0,0,0,0.3)',
-    zIndex: 1000,
+    zIndex: 2100,
   },
   overlay: {
     position: 'fixed',
     inset: 0,
     backgroundColor: 'rgba(0,0,0,0.4)',
-    backdropFilter: 'blur(4px)',
+    //backdropFilter: 'blur(4px)',
     zIndex: 2000,
   },
   loginWrapper: {
