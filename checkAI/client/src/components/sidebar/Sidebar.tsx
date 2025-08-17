@@ -18,16 +18,19 @@ interface User {
 }
 
 interface SidebarProps {
-  user: User;
+  user: User | null;
   isOpen: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ user }) => {
+const Sidebar: React.FC<SidebarProps> = ({ user, isOpen: initialOpen }) => {
   const [isOpen, setIsOpen] = useState(false); // Uvek skriven kad se pokrene
   const [signedIn, setSignedIn] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showSignInForm, setShowSignInForm] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
@@ -39,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       setShowLoginForm(true);
       setIsOpen(false); // Sidebar ostaje zatvoren prilikom otvaranja forme
     }
-     location.reload(); //refresh home page
+    location.reload(); //refresh home page
   };
 
   const handleDetailsClick = () => setShowDetails(true);
@@ -92,7 +95,18 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               alignItems: 'center',
             }}
           >
-            <UserInfo {...user} />
+            {user ? (
+              <UserInfo
+                firstName={user.firstName}
+                lastName={user.lastName}
+                email={user.email}
+                type={user.type}
+                imgSrc={user.imgSrc}
+                messagesLeft={user.messagesLeft}
+              />
+            ) : (
+              <p>Please log in</p>
+            )}
             {signedIn && <DetailsButton onClick={handleDetailsClick} />}
           </div>
         </div>
@@ -124,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         </button>
       )}
 
-      {showDetails && signedIn && (
+      {showDetails && signedIn && user && (
         <DetailsForm user={user} onClose={handleCloseDetails} />
       )}
 
@@ -146,16 +160,23 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       )}
 
       {showSignInForm && (
-  <div style={styles.loginWrapper}>
-    <SignInForm
-      onClose={handleSignInClose}
-      onBackToLogin={() => {
-        setShowSignInForm(false);
-        setShowLoginForm(true);
-      }}
-    />
-  </div>
-)}
+        <div style={styles.loginWrapper}>
+          <SignInForm
+            onClose={handleSignInClose}
+            onBackToLogin={() => {
+              setShowSignInForm(false);
+              setShowLoginForm(true);
+            }}
+
+            onRegisterComplete={(newUser) => {
+              setShowSignInForm(false);
+              setShowLoginForm(true);
+              setCurrentUser(newUser);  // update user state
+              setSignedIn(true);  // automatski prijavljen nakon registracije
+            }}
+          />
+        </div>
+      )}
     </>
   );
 };

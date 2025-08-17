@@ -4,6 +4,9 @@ import LoginForm from '../forms/logInForm/LogInForm';
 import SignInForm from '../forms/signInForm/SignInForm';
 import Navbar from '../components/navbar/Navbar';
 
+import type { User } from '../types/User';
+
+/*
 const user = {
   firstName: 'John',
   lastName: 'Doe',
@@ -14,12 +17,14 @@ const user = {
   type: 'premium' as const,
   imgSrc: 'https://i.pravatar.cc/150?img=3',
   messagesLeft: 20,
-};
+};*/
 
 function HomePage() {
   const [showLogin, setShowLogin] = useState(true);
   const [showSignInForm, setShowSignInForm] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar] = useState(true);
+
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const openSignInForm = () => {
     setShowLogin(false);
@@ -49,12 +54,26 @@ function HomePage() {
     console.log('History clicked');
   };
 
+  const handleRegisterComplete = (newUser: User) => {
+    console.log('New user registered:', newUser);
+    setCurrentUser(newUser); // setujemo trenutno prijavljenog korisnika
+    backToLogin(); // vrati na login formu ili direktno zatvori formu
+  };
+
+   // Kada korisnik uspešno uloguje
+  const handleLoginComplete = (loggedInUser: User) => {
+    setCurrentUser(loggedInUser);
+    setShowLogin(false);
+  };
+
+
+
   const formsOpen = showLogin || showSignInForm;
 
   return (
     <>
       <Navbar onNewChatClick={handleNewChat} onHistoryClick={handleHistoryClick} formsOpen={formsOpen} />
-      <Sidebar user={user} isOpen={showSidebar} />
+      <Sidebar user={currentUser} isOpen={showSidebar} />
 
       {formsOpen && <div style={styles.overlay} />}
 
@@ -66,7 +85,11 @@ function HomePage() {
 
       {showSignInForm && (
         <div style={styles.formWrapper}>
-          <SignInForm onClose={closeSignInForm} onBackToLogin={backToLogin} />
+          <SignInForm
+            onClose={closeSignInForm}
+            onBackToLogin={backToLogin}
+            onRegisterComplete={handleRegisterComplete}
+          />
         </div>
       )}
     </>
