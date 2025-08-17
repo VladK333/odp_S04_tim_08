@@ -1,27 +1,37 @@
-// components/navbar/Navbar.tsx
 import React from 'react';
 
 interface NavbarProps {
   onNewChatClick: () => void;
   onHistoryClick?: () => void;
+  formsOpen?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick, formsOpen }) => {
   return (
     <nav style={styles.navbar}>
-      {/* Levi deo: naziv aplikacije i New Chat dugme */}
       <div style={styles.leftSection}>
         <div style={styles.appName}>CheckAI</div>
-        <button style={styles.newChatButton} onClick={onNewChatClick}>
+
+        <button
+          style={{
+            ...styles.newChatButton,
+            filter: formsOpen ? 'blur(2px)' : 'none',
+            cursor: formsOpen ? 'unset' : 'pointer',
+          }}
+          onClick={!formsOpen ? onNewChatClick : undefined}
+          disabled={formsOpen}
+          aria-disabled={formsOpen}
+        >
           New Chat
         </button>
       </div>
 
-      {/* Desni deo: History dugme centrirano */}
       <div style={styles.rightSection}>
-        <button style={styles.historyButton} onClick={onHistoryClick}>
-          History ▼
-        </button>
+        {!formsOpen && (
+          <button style={styles.historyButton} onClick={onHistoryClick}>
+            History ▼
+          </button>
+        )}
       </div>
     </nav>
   );
@@ -38,8 +48,9 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     padding: '0 20px',
     boxSizing: 'border-box',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.7)',
     userSelect: 'none',
+    //backgroundColor: 'white',
     zIndex: 10000,
   },
   leftSection: {
@@ -60,9 +71,8 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: '#d252bdff',
     color: 'white',
     fontWeight: '600',
-    cursor: 'pointer',
     userSelect: 'none',
-    transition: 'background-color 0.3s ease',
+    transition: 'filter 0.3s ease',
   },
   rightSection: {
     flex: 1,

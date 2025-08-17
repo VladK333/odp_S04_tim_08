@@ -65,8 +65,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
 
 const styles: Record<string, React.CSSProperties> = {
   form: {
-    maxWidth: 360,
-    margin: '0 auto',
+    width: 360,
+    //margin: '0 auto',
     padding: 24,
     borderRadius: 12,
     backgroundColor: '#f9f7fa',

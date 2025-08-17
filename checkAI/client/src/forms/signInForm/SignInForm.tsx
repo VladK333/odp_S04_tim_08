@@ -338,9 +338,9 @@ const styles: Record<string, React.CSSProperties> = {
     userSelect: 'none',
   },
   form: {
-    maxWidth: 1000,
-    width: '100%',
-    margin: '0 auto',
+    //maxWidth: 1000,
+    width: 900,
+    //margin: '0 auto',
     padding: 40,
     borderRadius: 16,
     backgroundColor: '#f9f7fa',

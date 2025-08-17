@@ -19,6 +19,7 @@ interface User {
 
 interface SidebarProps {
   user: User;
+  isOpen: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
@@ -38,6 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       setShowLoginForm(true);
       setIsOpen(false); // Sidebar ostaje zatvoren prilikom otvaranja forme
     }
+     location.reload(); //refresh home page
   };
 
   const handleDetailsClick = () => setShowDetails(true);
