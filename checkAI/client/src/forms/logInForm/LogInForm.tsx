@@ -1,5 +1,6 @@
 // src/forms/logInForm/LogInForm.tsx
-import React from 'react';
+import React, {useState} from 'react';
+import Chat from "../../components/Chat";
 
 interface LoginFormProps {
   onClose: () => void;
@@ -7,6 +8,13 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
+
+  const [showChat, setShowChat] = useState(false);
+
+  if (showChat) {
+    return <Chat />; // otvara chat umesto login forme
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onClose(); // zatvori login formu na Log In
@@ -54,8 +62,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
         >
           Register
         </button>
+
         <span style={styles.separator}>|</span>
-        <button type="button" style={styles.optionButton}>
+
+        <button type="button" style={styles.optionButton}
+        onClick={() => setShowChat(true)} //otvara chat
+        >
           Continue as Guest
         </button>
       </div>
