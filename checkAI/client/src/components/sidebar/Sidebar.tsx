@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
-import LoginForm from '../../forms/logInForm/LogInForm';
-import SignInForm from '../../forms/signInForm/SignInForm';
+//import LoginForm from '../../forms/logInForm/LogInForm';
+//import SignInForm from '../../forms/signInForm/SignInForm';
 
 interface User {
   firstName: string;
@@ -20,46 +20,23 @@ interface User {
 interface SidebarProps {
   user: User;
   isOpen: boolean;
+  isGuest: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false); // Uvek skriven kad se pokrene
-  const [signedIn, setSignedIn] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const [showSignInForm, setShowSignInForm] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
+
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const handleAuthClick = () => {
-    if (signedIn) {
-      setSignedIn(false);
-      setShowDetails(false);
-    } else {
-      setShowLoginForm(true);
-      setIsOpen(false); // Sidebar ostaje zatvoren prilikom otvaranja forme
-    }
      location.reload(); //refresh home page
   };
 
   const handleDetailsClick = () => setShowDetails(true);
   const handleCloseDetails = () => setShowDetails(false);
-
-  const handleLoginClose = () => {
-    setShowLoginForm(false);
-    setSignedIn(true);
-  };
-
-  const handleRegisterClick = () => {
-    setShowLoginForm(false);
-    setShowSignInForm(true);
-  };
-
-  const handleSignInClose = () => {
-    setShowSignInForm(false);
-  };
-
-  const showOverlay = !isOpen || showLoginForm || showSignInForm;
 
   return (
     <>
@@ -74,10 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           <button
             onClick={handleAuthClick}
             style={styles.authButton}
-            aria-label={signedIn ? 'Log out' : 'Log in'}
+            aria-label={isGuest ? 'Log In' : 'Log Out'}
             type="button"
           >
-            {signedIn ? 'Log Out' : 'Log In'}
+            {isGuest ? 'Log In' : 'Log Out'}
           </button>
         </div>
 
@@ -93,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             }}
           >
             <UserInfo {...user} />
-            {signedIn && <DetailsButton onClick={handleDetailsClick} />}
+            {!isGuest && <DetailsButton onClick={handleDetailsClick} />}
           </div>
         </div>
 
@@ -124,38 +101,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         </button>
       )}
 
-      {showDetails && signedIn && (
+      {showDetails && !isGuest && (
         <DetailsForm user={user} onClose={handleCloseDetails} />
       )}
-
-      {showOverlay && (
-        <div
-          style={styles.overlay}
-          onClick={() => {
-            if (showLoginForm) setShowLoginForm(false);
-            else if (showSignInForm) setShowSignInForm(false);
-            //else if (!isOpen) setIsOpen(true);
-          }}
-        />
-      )}
-
-      {showLoginForm && (
-        <div style={styles.loginWrapper}>
-          <LoginForm onClose={handleLoginClose} onRegisterClick={handleRegisterClick} />
-        </div>
-      )}
-
-      {showSignInForm && (
-  <div style={styles.loginWrapper}>
-    <SignInForm
-      onClose={handleSignInClose}
-      onBackToLogin={() => {
-        setShowSignInForm(false);
-        setShowLoginForm(true);
-      }}
-    />
-  </div>
-)}
     </>
   );
 };

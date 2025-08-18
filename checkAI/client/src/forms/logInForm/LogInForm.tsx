@@ -4,9 +4,10 @@ import React from 'react';
 interface LoginFormProps {
   onClose: () => void;
   onRegisterClick: () => void;  // callback za otvaranje sign in forme
+  onContinueAsGuest: () => void; // callback za Continue as Guest dugme
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest  }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onClose(); // zatvori login formu na Log In
@@ -55,7 +56,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick }) => {
           Register
         </button>
         <span style={styles.separator}>|</span>
-        <button type="button" style={styles.optionButton}>
+        <button type="button" style={styles.optionButton}
+        onClick={onContinueAsGuest}
+        >
           Continue as Guest
         </button>
       </div>

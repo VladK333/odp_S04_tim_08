@@ -20,6 +20,7 @@ function HomePage() {
   const [showLogin, setShowLogin] = useState(true);
   const [showSignInForm, setShowSignInForm] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   const openSignInForm = () => {
     setShowLogin(false);
@@ -39,6 +40,11 @@ function HomePage() {
     setShowLogin(true);
   };
 
+    const continueAsGuest = () => {
+    setShowLogin(false);
+    setIsGuest(true);
+  };
+
   const handleNewChat = () => {
     console.log('New Chat clicked');
     setShowLogin(false);
@@ -54,13 +60,13 @@ function HomePage() {
   return (
     <>
       <Navbar onNewChatClick={handleNewChat} onHistoryClick={handleHistoryClick} formsOpen={formsOpen} />
-      <Sidebar user={user} isOpen={showSidebar} />
+      <Sidebar user={user} isOpen={showSidebar} isGuest={isGuest}/>
 
       {formsOpen && <div style={styles.overlay} />}
 
       {showLogin && (
         <div style={styles.formWrapper}>
-          <LoginForm onClose={closeLoginForm} onRegisterClick={openSignInForm} />
+          <LoginForm onClose={closeLoginForm} onRegisterClick={openSignInForm} onContinueAsGuest={continueAsGuest}/>
         </div>
       )}
 
