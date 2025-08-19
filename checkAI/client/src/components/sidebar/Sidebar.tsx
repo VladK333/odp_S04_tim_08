@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
-//import LoginForm from '../../forms/logInForm/LogInForm';
-//import SignInForm from '../../forms/signInForm/SignInForm';
+import LoginForm from '../../forms/logInForm/LogInForm';
+import SignInForm from '../../forms/signInForm/SignInForm';
 
 interface User {
   firstName: string;
@@ -18,25 +18,65 @@ interface User {
 }
 
 interface SidebarProps {
-  user: User;
+  user: User | null;
   isOpen: boolean;
-  isGuest: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ user }) => {
-  const [isOpen, setIsOpen] = useState(false); // Uvek skriven kad se pokrene
-  const [showDetails, setShowDetails] = useState(false);
-  const [isGuest, setIsGuest] = useState(false);
+const guestUser: User = {
+  firstName: 'Guest',
+  lastName: '',
+  email: '',
+  password: '',
+  dateOfBirth: '',
+  phoneNumber: '',
+  type: 'guest',
+  imgSrc: '/images/user.png',
+  messagesLeft: 0,
+};
 
+const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showSignInForm, setShowSignInForm] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const handleAuthClick = () => {
-     location.reload(); //refresh home page
+    location.reload();
   };
 
   const handleDetailsClick = () => setShowDetails(true);
   const handleCloseDetails = () => setShowDetails(false);
+
+  const handleLoginClose = () => {
+    setShowLoginForm(false);
+    setSignedIn(true);
+    setCurrentUser(initialUser);
+  };
+
+  const handleRegisterClick = () => {
+    setShowLoginForm(false);
+    setShowSignInForm(true);
+  };
+
+  const handleSignInClose = () => {
+    setShowSignInForm(false);
+  };
+
+  const handleContinueAsGuest = () => {
+    setShowLoginForm(false);
+    setSignedIn(false);
+    setCurrentUser(guestUser);
+  };
+
+  const showOverlay = !isOpen || showLoginForm || showSignInForm;
+
+  // Determine user to display: if currentUser set, else initialUser prop
+  const userToShow = currentUser || initialUser;
+  const isGuest = userToShow?.type === 'guest';
 
   return (
     <>
@@ -51,10 +91,10 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           <button
             onClick={handleAuthClick}
             style={styles.authButton}
-            aria-label={isGuest ? 'Log In' : 'Log Out'}
+            aria-label={!isGuest ? 'Log out' : 'Log in'}
             type="button"
           >
-            {isGuest ? 'Log In' : 'Log Out'}
+            {!isGuest ? 'Log Out' : 'Log In'}
           </button>
         </div>
 
@@ -69,7 +109,20 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               alignItems: 'center',
             }}
           >
-            <UserInfo {...user} />
+            {userToShow ? (
+              <UserInfo
+                firstName={userToShow.firstName}
+                lastName={userToShow.lastName}
+                email={isGuest ? '' : userToShow.email}
+                type={userToShow.type}
+                imgSrc={userToShow.imgSrc}
+                messagesLeft={userToShow.messagesLeft}
+              />
+            ) : (
+              <p>Please log in</p>
+            )}
+
+            {/* Prikaži DetailsButton samo ako je prijavljen i nije guest */}
             {!isGuest && <DetailsButton onClick={handleDetailsClick} />}
           </div>
         </div>
@@ -101,8 +154,46 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         </button>
       )}
 
-      {showDetails && !isGuest && (
-        <DetailsForm user={user} onClose={handleCloseDetails} />
+      {showDetails && userToShow && (
+        <DetailsForm user={userToShow} onClose={handleCloseDetails} />
+      )}
+
+      {showOverlay && (
+        <div
+          style={styles.overlay}
+          onClick={() => {
+            if (showLoginForm) setShowLoginForm(false);
+            else if (showSignInForm) setShowSignInForm(false);
+          }}
+        />
+      )}
+
+      {showLoginForm && (
+        <div style={styles.loginWrapper}>
+          <LoginForm
+            onClose={handleLoginClose}
+            onRegisterClick={handleRegisterClick}
+            onContinueAsGuest={handleContinueAsGuest}
+          />
+        </div>
+      )}
+
+      {showSignInForm && (
+        <div style={styles.loginWrapper}>
+          <SignInForm
+            onClose={handleSignInClose}
+            onBackToLogin={() => {
+              setShowSignInForm(false);
+              setShowLoginForm(true);
+            }}
+            onRegisterComplete={(newUser) => {
+              setShowSignInForm(false);
+              setShowLoginForm(true);
+              setCurrentUser(newUser);
+              setSignedIn(true);
+            }}
+          />
+        </div>
       )}
     </>
   );
@@ -175,7 +266,6 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'fixed',
     inset: 0,
     backgroundColor: 'rgba(0,0,0,0.4)',
-    //backdropFilter: 'blur(4px)',
     zIndex: 2000,
   },
   loginWrapper: {

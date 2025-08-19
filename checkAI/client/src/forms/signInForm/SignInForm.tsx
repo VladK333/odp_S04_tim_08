@@ -2,10 +2,14 @@
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import CreateButton from '../../components/buttons/CreateButton';
+import type { User } from '../../types/User';
+import { users } from '../../types/User';
+
 
 interface SignInFormProps {
   onClose: () => void;
   onBackToLogin: () => void;  // callback za povratak na login formu
+  onRegisterComplete: (user: User) => void; // vraca korisnika u app
 }
 
 interface FormValues {
@@ -28,7 +32,7 @@ interface FormErrors {
   profileImage?: string;
 }
 
-const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
+const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegisterComplete }) => {
   const [values, setValues] = useState<FormValues>({
     firstName: '',
     lastName: '',
@@ -136,6 +140,27 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
     if (Object.keys(validationErrors).length === 0) {
       onClose();
     }
+
+
+    if (Object.keys(validationErrors).length === 0) {
+      const newUser: User = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        dateOfBirth: values.dateOfBirth,
+        phoneNumber: values.phoneNumber,
+        type: 'regular',
+        imgSrc: imagePreviewUrl || 'https://i.pravatar.cc/150',
+        messagesLeft: 50,
+      };
+
+      users.push(newUser); // dodajemo u privremenu listu
+      onRegisterComplete(newUser); // vraćamo korisnika u App
+
+      onBackToLogin(); // vrati na login
+      //onClose(); // zatvaramo formu
+    }
   };
 
   return (
@@ -196,7 +221,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               name="firstName"
               type="text"
               placeholder="Enter your first name"
-              style={{...styles.input, borderColor: errors.firstName ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.firstName ? '#d32f2f' : '#d252bdff' }}
               value={values.firstName}
               onChange={handleChange}
               autoComplete="given-name"
@@ -217,7 +242,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               name="email"
               type="email"
               placeholder="Enter your email"
-              style={{...styles.input, borderColor: errors.email ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.email ? '#d32f2f' : '#d252bdff' }}
               value={values.email}
               onChange={handleChange}
               autoComplete="email"
@@ -238,7 +263,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               name="phoneNumber"
               type="tel"
               placeholder="Enter your phone number"
-              style={{...styles.input, borderColor: errors.phoneNumber ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.phoneNumber ? '#d32f2f' : '#d252bdff' }}
               value={values.phoneNumber}
               onChange={handleChange}
               autoComplete="tel"
@@ -262,7 +287,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               name="lastName"
               type="text"
               placeholder="Enter your last name"
-              style={{...styles.input, borderColor: errors.lastName ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.lastName ? '#d32f2f' : '#d252bdff' }}
               value={values.lastName}
               onChange={handleChange}
               autoComplete="family-name"
@@ -283,7 +308,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               name="password"
               type="password"
               placeholder="Enter your password"
-              style={{...styles.input, borderColor: errors.password ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.password ? '#d32f2f' : '#d252bdff' }}
               value={values.password}
               onChange={handleChange}
               autoComplete="new-password"
@@ -303,7 +328,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin }) => {
               id="dateOfBirth"
               name="dateOfBirth"
               type="date"
-              style={{...styles.input, borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff'}}
+              style={{ ...styles.input, borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff' }}
               value={values.dateOfBirth}
               onChange={handleChange}
               aria-invalid={!!errors.dateOfBirth}

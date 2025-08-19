@@ -101,7 +101,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.5,
   },
   closeButton: {
-    backgroundColor: '#6a2c70',
+    backgroundColor: '#cd55abff',
     color: 'white',
     border: 'none',
     padding: '10px 24px',

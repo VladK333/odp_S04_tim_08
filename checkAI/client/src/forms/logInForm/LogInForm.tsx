@@ -1,15 +1,17 @@
-// src/forms/logInForm/LogInForm.tsx
 import React from 'react';
+import Chat from "../../components/Chat";
 
 interface LoginFormProps {
   onClose: () => void;
   onRegisterClick: () => void;  // callback za otvaranje sign in forme
-  onContinueAsGuest: () => void; // callback za Continue as Guest dugme
+  onContinueAsGuest: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest  }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest }) => {
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Ovde možeš dodati validaciju i autentikaciju
     onClose(); // zatvori login formu na Log In
   };
 
@@ -55,9 +57,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
         >
           Register
         </button>
+
         <span style={styles.separator}>|</span>
-        <button type="button" style={styles.optionButton}
-        onClick={onContinueAsGuest}
+
+        <button
+          type="button"
+          style={styles.optionButton}
+          onClick={onContinueAsGuest}
         >
           Continue as Guest
         </button>
@@ -69,7 +75,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
 const styles: Record<string, React.CSSProperties> = {
   form: {
     width: 360,
-    //margin: '0 auto',
     padding: 24,
     borderRadius: 12,
     backgroundColor: '#f9f7fa',
