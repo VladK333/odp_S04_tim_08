@@ -117,8 +117,8 @@ const styles: Record<string, React.CSSProperties> = {
         display: "flex",
         left:43,
         top:55,
-        height: 'calc(100vh - 40px)',
-        width:"97%",
+        height: 'calc(100vh - 60px)',
+        width:"95%",
         flexDirection: "column",
         backgroundColor: "#826262ff",
         color: "#f5f5f5",
@@ -132,7 +132,6 @@ const styles: Record<string, React.CSSProperties> = {
         borderRadius: 12,
         background: "#141414",
         border: "1px solid #333",
-
     },
     message: {
         padding: "10px 14px",
@@ -156,7 +155,7 @@ const styles: Record<string, React.CSSProperties> = {
     row: {
         display: "flex",
         gap: 8,
-        padding: "0 20px 20px 20px",
+        padding: "0 20px 10px 20px",
     },
     input: {
         flex: 1,
