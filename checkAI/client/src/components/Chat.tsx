@@ -79,6 +79,9 @@ export default function Chat({ onLoginClick }: ChatProps) {
             <div style={styles.tab}>
                 <div style={styles.title}>CheckAI</div>
                 <button style={styles.loginBtn} onClick={onLoginClick}>Log In</button>
+                <button style={styles.loginBtn} onClick={() => setMessages([{ role: "system", content: "You are a helpful assistant." }])}>
+    New Chat
+  </button>
             </div>
 
             {/* CHAT */}
