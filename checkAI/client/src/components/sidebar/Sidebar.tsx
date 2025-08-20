@@ -4,6 +4,8 @@ import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
 import LoginForm from '../../forms/logInForm/LogInForm';
 import SignInForm from '../../forms/signInForm/SignInForm';
+import ToggleButton from '../buttons/ToggleButton';
+
 
 interface User {
   firstName: string;
@@ -72,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
     setCurrentUser(guestUser);
   };
 
-  const showOverlay = !isOpen || showLoginForm || showSignInForm;
+  const showOverlay = (showLoginForm || showSignInForm);
 
   // Determine user to display: if currentUser set, else initialUser prop
   const userToShow = currentUser || initialUser;
@@ -128,30 +130,12 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
         </div>
 
         {isOpen && (
-          <button
-            onClick={toggleSidebar}
-            aria-label="Close sidebar"
-            style={{ ...styles.toggleButton, right: -10 }}
-          >
-            &lt;
-          </button>
+          <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
         )}
       </aside>
 
       {!isOpen && (
-        <button
-          onClick={toggleSidebar}
-          aria-label="Open sidebar"
-          style={{
-            ...styles.toggleButton,
-            left: -10,
-            top: '50%',
-            position: 'fixed',
-            transform: 'translateY(-50%)',
-          }}
-        >
-          &gt;
-        </button>
+        <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
       )}
 
       {showDetails && userToShow && (
@@ -243,24 +227,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     userSelect: 'none',
     transition: 'background-color 0.3s ease',
-  },
-  toggleButton: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    width: 40,
-    height: 40,
-    border: 'none',
-    backgroundColor: '#cd55abff',
-    color: 'white',
-    fontSize: 20,
-    cursor: 'pointer',
-    userSelect: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0px 2px 6px rgba(0,0,0,0.3)',
-    zIndex: 2100,
   },
   overlay: {
     position: 'fixed',

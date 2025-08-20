@@ -1,24 +1,46 @@
 // src/components/Chat.tsx
 import { useState, useRef, useEffect } from "react";
 import { sendChatCompletion, type ChatMessage } from "../api/lmStudio";
+import ToggleButton from './buttons/ToggleButton';
+import NewChatButton from './buttons/NewChatButton';
 
 interface ChatProps {
-    onLoginClick: () => void; // callback za otvaranje login forme
+  newChatTrigger?: number;
 }
 
-export default function Chat() {
+export default function Chat({ newChatTrigger }: ChatProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([
         { role: "system", content: "You are a helpful assistant." },
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [isOpen, setIsOpen] = useState(false);
+    
+
     //prva poslata poruka
     const [firstMsgTime, setFirstMsgTime] = useState<Date | null>(null);
     const [msgCount, setMsgCount] = useState(0);
-
-
+    
     const historyRef = useRef<HTMLDivElement>(null);
+
+    const toggleSidebar = () => setIsOpen(prev => !prev);
+
+    useEffect(() => {
+        if (newChatTrigger !== undefined) {
+            setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+            setInput("");
+            setFirstMsgTime(null);
+            setMsgCount(0);
+        }
+    }, [newChatTrigger]);
+    
+    function handleNewChat() {
+    setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+    setInput("");
+    setFirstMsgTime(null);
+    setMsgCount(0);
+}
 
     async function handleSend() {
 
@@ -74,7 +96,8 @@ export default function Chat() {
     }, [messages]);
 
     return (
-        <div style={styles.page}>
+        <div style={{...styles.page, width: isOpen ? '97%' : '80%'}}>
+    <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
             {/* CHAT */}
             <div style={styles.history} ref={historyRef}>
@@ -109,19 +132,22 @@ export default function Chat() {
             </div>
         </div>
     );
+    
 }
 
 const styles: Record<string, React.CSSProperties> = {
     page: {
         position: "fixed",
         display: "flex",
-        left:43,
+        right: 5,
         top:55,
         height: 'calc(100vh - 60px)',
-        width:"95%",
+        //width:"97%",
         flexDirection: "column",
-        backgroundColor: "#826262ff",
+        //backgroundColor: "#826262ff",
         color: "#f5f5f5",
+        //zIndex:900,
+        transition: "width 0.3s ease",
     },
     history: {
         flex: 1,

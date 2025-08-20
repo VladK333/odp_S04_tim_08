@@ -1,37 +1,30 @@
 import React from 'react';
+import NewChatButton from '../buttons/NewChatButton';
+import HistoryButton from '../buttons/HistoryButton';
 
 interface NavbarProps {
   onNewChatClick: () => void;
   onHistoryClick?: () => void;
   formsOpen?: boolean;
+  isGuest: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick, formsOpen }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick, formsOpen, isGuest }) => {
+  
   return (
     <nav style={styles.navbar}>
       <div style={styles.leftSection}>
         <div style={styles.appName}>CheckAI</div>
 
-        <button
-          style={{
-            ...styles.newChatButton,
-            filter: formsOpen ? 'blur(2px)' : 'none',
-            cursor: formsOpen ? 'unset' : 'pointer',
-          }}
-          onClick={!formsOpen ? onNewChatClick : undefined}
-          disabled={formsOpen}
-          aria-disabled={formsOpen}
-        >
-          New Chat
-        </button>
+        <NewChatButton
+          onNewChatClick={onNewChatClick}
+          formsOpen={formsOpen}
+          style={styles.newChatButton}
+        />
       </div>
 
       <div style={styles.rightSection}>
-        {!formsOpen && (
-          <button style={styles.historyButton} onClick={onHistoryClick}>
-            History ▼
-          </button>
-        )}
+        {!formsOpen && !isGuest && <HistoryButton onClick={onHistoryClick} />}
       </div>
     </nav>
   );

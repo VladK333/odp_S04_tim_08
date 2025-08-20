@@ -39,7 +39,14 @@ function HomePage() {
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
+  const [chatOpen, setChatOpen] = useState(true);
+  const toggleChat = () => setChatOpen(prev => !prev);
+  const [newChatCounter, setNewChatCounter] = useState(0);
+  const [isGuest, setIsGuest] = React.useState(false);
+
+
   const continueAsGuest = () => {
+  setIsGuest(true);
   setCurrentUser(guestUser);
   setShowLogin(false);
   setShowSignInForm(false);
@@ -65,6 +72,7 @@ function HomePage() {
 
   const handleNewChat = () => {
     console.log('New Chat clicked');
+    setNewChatCounter(prev => prev + 1); // dodato
     setShowLogin(false);
     setShowSignInForm(false);
   };
@@ -89,12 +97,12 @@ function HomePage() {
 
   return (
     <>
-      <Navbar onNewChatClick={handleNewChat} onHistoryClick={handleHistoryClick} formsOpen={formsOpen} />
+      <Navbar onNewChatClick={handleNewChat} onHistoryClick={handleHistoryClick} formsOpen={formsOpen} isGuest={isGuest}/>
       <Sidebar user={currentUser} isOpen={showSidebar} />
 
       {/* Ovde prikazujemo Chat komponentu */}
-      <div style={{ marginLeft: showSidebar ? 300 : 0, padding: 20 }}>
-        <Chat />
+      <div style={{ padding: 20, width: showSidebar ? "60%" : "97%" }}>
+        <Chat newChatTrigger={newChatCounter}/>
       </div>
 
       {formsOpen && <div style={styles.overlay} />}
@@ -132,9 +140,6 @@ const styles: Record<string, React.CSSProperties> = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 10000,
-    //width: '90%',
-    //maxWidth: 900,
-    //padding: 16,
     boxSizing: 'border-box',
   },
 };
