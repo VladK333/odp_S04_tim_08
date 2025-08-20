@@ -2,13 +2,18 @@
 import { useState, useRef, useEffect } from "react";
 import { sendChatCompletion, type ChatMessage } from "../api/lmStudio";
 import ToggleButton from './buttons/ToggleButton';
-import NewChatButton from './buttons/NewChatButton';
+//import NewChatButton from './buttons/NewChatButton';
+
+import type { User } from "../types/User";
 
 interface ChatProps {
-  newChatTrigger?: number;
+    newChatTrigger?: number;
+
+    user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
-export default function Chat({ newChatTrigger }: ChatProps) {
+export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([
         { role: "system", content: "You are a helpful assistant." },
     ]);
@@ -16,12 +21,12 @@ export default function Chat({ newChatTrigger }: ChatProps) {
     const [loading, setLoading] = useState(false);
 
     const [isOpen, setIsOpen] = useState(false);
-    
+
 
     //prva poslata poruka
-    const [firstMsgTime, setFirstMsgTime] = useState<Date | null>(null);
-    const [msgCount, setMsgCount] = useState(0);
-    
+    //const [firstMsgTime, setFirstMsgTime] = useState<Date | null>(null);
+    // const [msgCount, setMsgCount] = useState(0);
+
     const historyRef = useRef<HTMLDivElement>(null);
 
     const toggleSidebar = () => setIsOpen(prev => !prev);
@@ -30,44 +35,38 @@ export default function Chat({ newChatTrigger }: ChatProps) {
         if (newChatTrigger !== undefined) {
             setMessages([{ role: "system", content: "You are a helpful assistant." }]);
             setInput("");
-            setFirstMsgTime(null);
-            setMsgCount(0);
+           // setFirstMsgTime(null);
+           // setMsgCount(0);
         }
     }, [newChatTrigger]);
-    
+
+    /*
     function handleNewChat() {
-    setMessages([{ role: "system", content: "You are a helpful assistant." }]);
-    setInput("");
-    setFirstMsgTime(null);
-    setMsgCount(0);
-}
+        setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+        setInput("");
+       // setFirstMsgTime(null);
+       // setMsgCount(0);
+    }*/
 
     async function handleSend() {
 
+         if (!user) return;
+
         //provera vremena
-        const now = new Date();
-
-        // resetuj limit ako je novi dan
-        if (firstMsgTime && now.toDateString() !== firstMsgTime.toDateString()) {
-            setFirstMsgTime(null);
-            setMsgCount(0);
-        }
-
-        if (msgCount >= 50) {
-            setMessages(prev => [
-                ...prev,
-                { role: "assistant", content: "You have reached your daily limit of 50 messages. Please try again tomorrow." }
-            ]);
-            return;
-        }
+       // const now = new Date();
 
         const text = input.trim();
         if (!text || loading) return;
 
+        if (user.messagesLeft <= 0) {
+            setMessages(prev => [
+                ...prev,
+                { role: "assistant", content: "You have reached your daily limit of messages." }
+            ]);
+            return;
+        }
 
-        // prvi put danas
-        if (!firstMsgTime) setFirstMsgTime(now);
-        setMsgCount(prev => prev + 1);
+        setUser(prev => prev ? { ...prev, messagesLeft: prev.messagesLeft - 1 } : prev);
 
 
         const next = [...messages, { role: "user" as const, content: text }];
@@ -89,15 +88,17 @@ export default function Chat({ newChatTrigger }: ChatProps) {
         }
     }
 
+
     useEffect(() => {
-        if (historyRef.current) {
-            historyRef.current.scrollTop = historyRef.current.scrollHeight;
+        if (newChatTrigger !== undefined) {
+            setMessages([{ role: "system", content: "You are a helpful assistant." }]);
+            setInput("");
         }
-    }, [messages]);
+    }, [newChatTrigger]);
 
     return (
-        <div style={{...styles.page, width: isOpen ? '97%' : '80%'}}>
-    <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
+        <div style={{ ...styles.page, width: isOpen ? '97%' : '80%' }}>
+            <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
             {/* CHAT */}
             <div style={styles.history} ref={historyRef}>
@@ -132,7 +133,7 @@ export default function Chat({ newChatTrigger }: ChatProps) {
             </div>
         </div>
     );
-    
+
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -140,7 +141,7 @@ const styles: Record<string, React.CSSProperties> = {
         position: "fixed",
         display: "flex",
         right: 5,
-        top:55,
+        top: 55,
         height: 'calc(100vh - 60px)',
         //width:"97%",
         flexDirection: "column",

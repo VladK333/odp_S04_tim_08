@@ -7,18 +7,6 @@ import Chat from "../components/Chat";  // Importuj Chat komponentu
 
 import type { User } from '../types/User';
 
-/*
-const user = {
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  password: '123',
-  dateOfBirth: '1.1.2000',
-  phoneNumber: '063123123',
-  type: 'premium' as const,
-  imgSrc: 'https://i.pravatar.cc/150?img=3',
-  messagesLeft: 20,
-};*/
 
 const guestUser: User = {
   firstName: 'Guest',
@@ -29,7 +17,7 @@ const guestUser: User = {
   phoneNumber: '',
   type: 'guest',
   imgSrc: '/images/user.png',
-  messagesLeft: 0,
+  messagesLeft: 50,
 };
 
 function HomePage() {
@@ -87,11 +75,12 @@ function HomePage() {
     backToLogin(); // vrati na login formu ili direktno zatvori formu
   };
 
+  /*
    // Kada korisnik uspešno uloguje
   const handleLoginComplete = (loggedInUser: User) => {
     setCurrentUser(loggedInUser);
     setShowLogin(false);
-  };
+  };*/
 
   const formsOpen = showLogin || showSignInForm;
 
@@ -102,7 +91,9 @@ function HomePage() {
 
       {/* Ovde prikazujemo Chat komponentu */}
       <div style={{ padding: 20, width: showSidebar ? "60%" : "97%" }}>
-        <Chat newChatTrigger={newChatCounter}/>
+        <Chat newChatTrigger={newChatCounter} 
+    user={currentUser} 
+    setUser={setCurrentUser}/>
       </div>
 
       {formsOpen && <div style={styles.overlay} />}
