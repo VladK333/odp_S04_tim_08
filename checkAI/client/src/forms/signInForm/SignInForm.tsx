@@ -20,6 +20,7 @@ interface FormValues {
   dateOfBirth: string;
   phoneNumber: string;
   profileImage: File | null;
+  type: 'regular' | 'premium';
 }
 
 interface FormErrors {
@@ -30,6 +31,7 @@ interface FormErrors {
   dateOfBirth?: string;
   phoneNumber?: string;
   profileImage?: string;
+  //  type: 'regular' | 'premium';
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegisterComplete }) => {
@@ -41,6 +43,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
     dateOfBirth: '',
     phoneNumber: '',
     profileImage: null,
+    type: 'regular', //default vrednost
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -97,17 +100,21 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
     return newErrors;
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setValues((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [name]: undefined,
     }));
   };
+
+
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -150,9 +157,10 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
         password: values.password,
         dateOfBirth: values.dateOfBirth,
         phoneNumber: values.phoneNumber,
-        type: 'regular',
+        type: values.type,
         imgSrc: imagePreviewUrl || 'https://i.pravatar.cc/150',
-        messagesLeft: 50,
+        messagesLeft: values.type === 'premium' ? Infinity : 50,
+
       };
 
       users.push(newUser); // dodajemo u privremenu listu
@@ -207,6 +215,22 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
               {errors.profileImage}
             </div>
           )}
+
+
+          {/*  izbor tipa korsnika */}
+          <label htmlFor="type" style={{ ...styles.label, marginTop: 20 }}>
+            Account Type
+          </label>
+          <select
+            id="type"
+            name="type"
+            value={values.type}
+            onChange={handleChange}
+            style={styles.select}
+          >
+            <option value="regular">Regular</option>
+            <option value="premium">Premium</option>
+          </select>
         </div>
 
         {/* Right side: Two columns of inputs */}
@@ -468,6 +492,20 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'center',
   },
+
+  select: {
+    marginTop: 8,
+    padding: '10px 14px',
+    borderRadius: 8,
+    border: '1.5px solid #d252bdff',
+    fontSize: 15,
+    outline: 'none',
+    transition: 'border-color 0.3s ease',
+    width: '100%',
+    cursor: 'pointer',
+  },
+
+
 };
 
 export default SignInForm;
