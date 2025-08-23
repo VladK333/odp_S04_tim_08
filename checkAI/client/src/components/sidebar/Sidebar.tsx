@@ -21,6 +21,7 @@ interface User {
 interface SidebarProps {
   user: User | null;
   isOpen: boolean;
+   setUser?: React.Dispatch<React.SetStateAction<User | null>>; 
 }
 
 const guestUser: User = {

@@ -3,7 +3,7 @@ import Sidebar from '../components/sidebar/Sidebar';
 import LoginForm from '../forms/logInForm/LogInForm';
 import SignInForm from '../forms/signInForm/SignInForm';
 import Navbar from '../components/navbar/Navbar';
-import Chat from "../components/Chat";  
+import Chat from "../components/Chat";
 import type { User } from '../types/User';
 
 const guestUser: User = {
@@ -69,22 +69,21 @@ function HomePage() {
 
   return (
     <>
-      <Navbar 
-        onNewChatClick={handleNewChat} 
-        onHistoryClick={handleHistoryClick} 
-        formsOpen={formsOpen} 
-        isGuest={isGuest} 
+      <Navbar
+        onNewChatClick={handleNewChat}
+        onHistoryClick={handleHistoryClick}
+        formsOpen={formsOpen}
+        isGuest={isGuest}
       />
-      <Sidebar 
-        user={currentUser} 
-        isOpen={showSidebar} 
-        onLoginClick={() => setShowLogin(true)}
-        onRegisterClick={() => setShowSignInForm(true)}
-        onGuestClick={continueAsGuest}
+
+      <Sidebar
+        user={currentUser}
+        isOpen={showSidebar}
+        setUser={setCurrentUser} // opcionalno
       />
 
       <div style={{ padding: 20, width: showSidebar ? "60%" : "97%" }}>
-        <Chat newChatTrigger={newChatCounter} user={currentUser} setUser={setCurrentUser}/>
+        <Chat newChatTrigger={newChatCounter} user={currentUser} setUser={setCurrentUser} />
       </div>
 
       {formsOpen && <div style={styles.overlay} />}

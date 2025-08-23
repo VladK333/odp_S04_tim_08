@@ -32,7 +32,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
       </h2>
       <p style={styles.email}>{email}</p>
       <div style={styles.messagesLeftLabel}>
-        <strong>No. messages left:</strong> {messagesLeft}
+         <strong>No. messages left:</strong> {type === 'premium' ? '∞' : messagesLeft}
       </div>
       <span style={{ ...styles.userTypeLabel, backgroundColor: labelColor }}>
         {type.toUpperCase()}
