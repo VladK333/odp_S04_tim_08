@@ -1,18 +1,52 @@
-import React from 'react';
-import Chat from "../../components/Chat";
+import React, { useState } from 'react';
+import type { User } from '../../types/User';
+
 
 interface LoginFormProps {
   onClose: () => void;
   onRegisterClick: () => void;  // callback za otvaranje sign in forme
   onContinueAsGuest: () => void;
+  onLoginSuccess: (user: User) => void; // prima user
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest, onLoginSuccess }) => {
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Ovde možeš dodati validaciju i autentikaciju
-    onClose(); // zatvori login formu na Log In
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+
+    e.preventDefault(); // ✅ sprečava refresh stranice
+
+    console.log('Dugme pritisnuto', { email, password }); // proveri da li se loguje
+
+
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const user: User = data.user;
+
+        onLoginSuccess(user);
+
+        onClose();
+      } else {
+        // Prikaz greške
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Greška servera');
+    }
   };
 
   return (
@@ -30,6 +64,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
         style={styles.input}
         required
         autoComplete="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
       />
 
       <label htmlFor="password" style={styles.label}>
@@ -43,6 +79,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
         style={styles.input}
         required
         autoComplete="current-password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
       />
 
       <button type="submit" style={styles.loginButton}>

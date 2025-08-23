@@ -6,7 +6,6 @@ import LoginForm from '../../forms/logInForm/LogInForm';
 import SignInForm from '../../forms/signInForm/SignInForm';
 import ToggleButton from '../buttons/ToggleButton';
 
-
 interface User {
   firstName: string;
   lastName: string;
@@ -36,13 +35,13 @@ const guestUser: User = {
   messagesLeft: 0,
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
+const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [signedIn, setSignedIn] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showSignInForm, setShowSignInForm] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
@@ -53,32 +52,18 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
   const handleDetailsClick = () => setShowDetails(true);
   const handleCloseDetails = () => setShowDetails(false);
 
-  const handleLoginClose = () => {
-    setShowLoginForm(false);
-    setSignedIn(true);
-    setCurrentUser(initialUser);
-  };
-
+  const handleLoginClose = () => setShowLoginForm(false);
   const handleRegisterClick = () => {
     setShowLoginForm(false);
     setShowSignInForm(true);
   };
+  const handleSignInClose = () => setShowSignInForm(false);
+  const handleContinueAsGuest = () => setShowLoginForm(false);
 
-  const handleSignInClose = () => {
-    setShowSignInForm(false);
-  };
+  const showOverlay = showLoginForm || showSignInForm;
 
-  const handleContinueAsGuest = () => {
-    setShowLoginForm(false);
-    setSignedIn(false);
-    setCurrentUser(guestUser);
-  };
-
-  const showOverlay = (showLoginForm || showSignInForm);
-
-  // Determine user to display: if currentUser set, else initialUser prop
-  const userToShow = currentUser || initialUser;
-  const isGuest = userToShow?.type === 'guest';
+  const userToShow = user || guestUser;
+  const isGuest = userToShow.type === 'guest';
 
   return (
     <>
@@ -111,36 +96,30 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
               alignItems: 'center',
             }}
           >
-            {userToShow ? (
-              <UserInfo
-                firstName={userToShow.firstName}
-                lastName={userToShow.lastName}
-                email={isGuest ? '' : userToShow.email}
-                type={userToShow.type}
-                imgSrc={userToShow.imgSrc}
-                messagesLeft={userToShow.messagesLeft}
-              />
-            ) : (
-              <p>Please log in</p>
-            )}
+            <UserInfo
+              firstName={userToShow.firstName}
+              lastName={userToShow.lastName}
+              email={isGuest ? '' : userToShow.email}
+              type={userToShow.type}
+              imgSrc={userToShow.imgSrc}
+              messagesLeft={userToShow.messagesLeft}
+            />
 
-            {/* Prikaži DetailsButton samo ako je prijavljen i nije guest */}
             {!isGuest && <DetailsButton onClick={handleDetailsClick} />}
           </div>
         </div>
 
-        {isOpen && (
-          <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
-        )}
+        {isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
       </aside>
 
-      {!isOpen && (
-        <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
-      )}
+      {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
+
+      {showDetails && <DetailsForm user={userToShow} onClose={handleCloseDetails} />}
 
       {showDetails && userToShow && (
         <DetailsForm user={userToShow} onClose={handleCloseDetails} />
       )}
+
 
       {showOverlay && (
         <div
@@ -158,6 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
             onClose={handleLoginClose}
             onRegisterClick={handleRegisterClick}
             onContinueAsGuest={handleContinueAsGuest}
+            onLoginSuccess={(user) => setCurrentUser(user)} // ovde setuješ user-a
           />
         </div>
       )}
@@ -171,10 +151,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user: initialUser}) => {
               setShowLoginForm(true);
             }}
             onRegisterComplete={(newUser) => {
+              setCurrentUser(newUser); // setuje novog registrovanog korisnika
               setShowSignInForm(false);
               setShowLoginForm(true);
-              setCurrentUser(newUser);
-              setSignedIn(true);
             }}
           />
         </div>

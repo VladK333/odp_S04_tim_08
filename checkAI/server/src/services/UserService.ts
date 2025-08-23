@@ -32,7 +32,13 @@ export class UserService {
             id: row.id,
             email: row.email,
             password: row.lozinka,
-            type: row.tip
+            type: row.tip,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            dateOfBirth: row.date_of_birth,
+            phoneNumber: row.phone_number,
+            imgSrc: row.img_src,
+            messagesLeft: row.messages_left
         };
     }
 }
