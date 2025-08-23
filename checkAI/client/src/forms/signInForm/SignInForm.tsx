@@ -5,6 +5,7 @@ import CreateButton from '../../components/buttons/CreateButton';
 import type { User } from '../../types/User';
 import { users } from '../../types/User';
 
+import { signUp } from '../../api/authApi';
 
 interface SignInFormProps {
   onClose: () => void;
@@ -138,19 +139,15 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validate();
     setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length === 0) {
-      onClose();
-    }
+    if (Object.keys(validationErrors).length !== 0) return;
 
-
-    if (Object.keys(validationErrors).length === 0) {
-      const newUser: User = {
+    const newUser: User = {
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -160,16 +157,26 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
         type: values.type,
         imgSrc: imagePreviewUrl || 'https://i.pravatar.cc/150',
         messagesLeft: values.type === 'premium' ? Infinity : 50,
+    };
 
-      };
+    // dodajemo u privremenu listu frontend-a
+    users.push(newUser);
+    onRegisterComplete(newUser);
 
-      users.push(newUser); // dodajemo u privremenu listu
-      onRegisterComplete(newUser); // vraćamo korisnika u App
+    try {
+        await signUp({
+            email: values.email,
+            password: values.password,
+            type: values.type,
+        });
 
-      onBackToLogin(); // vrati na login
-      //onClose(); // zatvaramo formu
+        alert('User registered successfully!');
+        onBackToLogin();
+        onClose();
+    } catch (error: any) {
+        alert(error.message);
     }
-  };
+};
 
   return (
     <form style={styles.form} noValidate onSubmit={handleSubmit}>
