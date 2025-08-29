@@ -1,4 +1,4 @@
-import { pool } from '../connection/DatabasePool';
+import { pool } from '../Database/connection/DatabasePool';
 import { User } from '../models/User';
 import bcrypt from 'bcrypt';
 

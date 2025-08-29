@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '../Services/UserService';
+import { UserService } from '../../Services/UserService';
 import bcrypt from 'bcrypt';
 
 const userService = new UserService();
