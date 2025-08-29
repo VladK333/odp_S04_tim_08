@@ -33,11 +33,9 @@ const DetailsForm: React.FC<DetailsFormProps> = ({ user, onClose }) => {
             <li><strong>First Name:</strong> {user.firstName}</li>
             <li><strong>Last Name:</strong> {user.lastName}</li>
             <li><strong>Email:</strong> {user.email}</li>
-            <li><strong>Password:</strong> {user.password}</li>
             <li><strong>Date of Birth:</strong> {user.dateOfBirth}</li>
             <li><strong>Phone Number:</strong> {user.phoneNumber}</li>
             <li><strong>User Type:</strong> {user.type}</li>
-            <li><strong>Messages Left:</strong> {user.messagesLeft}</li>
           </ul>
         </div>
         <button type="button" onClick={onClose} style={styles.closeButton} aria-label="Close details form">

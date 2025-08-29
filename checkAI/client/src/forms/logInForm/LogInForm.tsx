@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import type { User } from '../../types/User';
+import { validateLoginForm } from '../../validators/auth/login/LogInValidation';
+import type ILogin from '../../interfaces/auth/login/ILogin';
 
 
 interface LoginFormProps {
@@ -17,11 +19,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
 
   const handleSubmit = async (e: React.FormEvent) => {
 
-    e.preventDefault(); // ✅ sprečava refresh stranice
+    e.preventDefault(); // sprecava refresh stranice
 
-    console.log('Dugme pritisnuto', { email, password }); // proveri da li se loguje
+    const loginValues: ILogin = { email, password };
+    const validationErrors = validateLoginForm(loginValues);
 
-
+    if (validationErrors.email || validationErrors.password) {
+      setError(validationErrors.email || validationErrors.password || '');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -29,7 +35,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-
 
       const data = await response.json();
 
@@ -40,12 +45,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
 
         onClose();
       } else {
-        // Prikaz greške
+        // Prikaz greske
         setError(data.message);
       }
     } catch (err) {
       console.error(err);
-      setError('Greška servera');
+      setError('Greska servera');
     }
   };
 
@@ -82,6 +87,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
+
+      {error && <div style={styles.errorMessage}>{error}</div>}
 
       <button type="submit" style={styles.loginButton}>
         Log In
@@ -177,6 +184,12 @@ const styles: Record<string, React.CSSProperties> = {
   separator: {
     color: '#999',
     fontSize: 14,
+  },
+    errorMessage: {
+    color: 'red',
+    fontWeight: '200',
+    marginBottom: 8,
+    textAlign: 'center',
   },
 };
 

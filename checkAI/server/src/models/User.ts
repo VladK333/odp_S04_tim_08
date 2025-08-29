@@ -3,10 +3,10 @@ export interface User {
   email: string;
   password: string;
   type: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   imgSrc?: string;
-  dateOfBirth?: string;
-  phoneNumber?: string;
+  dateOfBirth: string;
+  phoneNumber: string;
   messagesLeft?: number;
 }

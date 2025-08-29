@@ -6,7 +6,7 @@ export class UserService {
 
     // Kreiranje korisnika
     async createUser(user: User): Promise<void> {
-        const { email, password, type } = user;
+        const { email, password, type, firstName, lastName, dateOfBirth, phoneNumber, imgSrc} = user;
 
         // proveri da li već postoji
         const [rows] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
@@ -17,8 +17,8 @@ export class UserService {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await pool.query(
-            'INSERT INTO users (email, lozinka, tip) VALUES (?, ?, ?)',
-            [email, hashedPassword, type]
+            'INSERT INTO users (email, lozinka, tip, ime, prezime, datumR, telefon, imgPath) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [email, hashedPassword, type, firstName, lastName, dateOfBirth, phoneNumber, imgSrc]
         );
     }
 
@@ -33,11 +33,11 @@ export class UserService {
             email: row.email,
             password: row.lozinka,
             type: row.tip,
-            firstName: row.first_name,
-            lastName: row.last_name,
-            dateOfBirth: row.date_of_birth,
-            phoneNumber: row.phone_number,
-            imgSrc: row.img_src,
+            firstName: row.ime,
+            lastName: row.prezime,
+            dateOfBirth: row.datumR,
+            phoneNumber: row.telefon,
+            imgSrc: row.imgPath,
             messagesLeft: row.messages_left
         };
     }

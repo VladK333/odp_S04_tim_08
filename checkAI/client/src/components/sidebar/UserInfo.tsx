@@ -4,7 +4,6 @@ import React from 'react';
 interface UserInfoProps {
   firstName: string;
   lastName: string;
-  email: string;
   type: 'guest' | 'regular' | 'premium';
   imgSrc: string;
   messagesLeft: number;
@@ -13,7 +12,6 @@ interface UserInfoProps {
 const UserInfo: React.FC<UserInfoProps> = ({
   firstName,
   lastName,
-  email,
   type,
   imgSrc,
   messagesLeft,
@@ -30,7 +28,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
       <h2 style={styles.name}>
         {firstName} {lastName}
       </h2>
-      <p style={styles.email}>{email}</p>
       <div style={styles.messagesLeftLabel}>
          <strong>No. messages left:</strong> {type === 'premium' ? '∞' : messagesLeft}
       </div>

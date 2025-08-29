@@ -1,9 +1,10 @@
-// src/forms/signInForm/SignInForm.tsx
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import CreateButton from '../../components/buttons/CreateButton';
 import type { User } from '../../types/User';
 import { users } from '../../types/User';
+import type { FormValues, FormErrors } from '../../interfaces/auth/signin/IForms';
+import { validateSignInForm } from '../../validators/auth/signin/SignInValidation';
 
 import { signUp } from '../../api/authApi';
 
@@ -11,28 +12,6 @@ interface SignInFormProps {
   onClose: () => void;
   onBackToLogin: () => void;  // callback za povratak na login formu
   onRegisterComplete: (user: User) => void; // vraca korisnika u app
-}
-
-interface FormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  profileImage: File | null;
-  type: 'regular' | 'premium';
-}
-
-interface FormErrors {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  password?: string;
-  dateOfBirth?: string;
-  phoneNumber?: string;
-  profileImage?: string;
-  //  type: 'regular' | 'premium';
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegisterComplete }) => {
@@ -50,57 +29,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
   const [errors, setErrors] = useState<FormErrors>({});
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
-  const validate = (): FormErrors => {
-    const newErrors: FormErrors = {};
-
-    if (!values.firstName.trim()) {
-      newErrors.firstName = 'First name is required.';
-    }
-
-    if (!values.lastName.trim()) {
-      newErrors.lastName = 'Last name is required.';
-    }
-
-    if (!values.email.trim()) {
-      newErrors.email = 'Email is required.';
-    } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email.trim())
-    ) {
-      newErrors.email = 'Email format is invalid.';
-    }
-
-    if (!values.password) {
-      newErrors.password = 'Password is required.';
-    } else if (values.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
-    }
-
-    if (!values.dateOfBirth) {
-      newErrors.dateOfBirth = 'Date of birth is required.';
-    }
-
-    if (!values.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required.';
-    } else if (
-      !/^\+?\d{6,15}$/.test(values.phoneNumber.trim())
-    ) {
-      newErrors.phoneNumber = 'Phone number format is invalid.';
-    }
-
-    if (values.profileImage) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (!allowedTypes.includes(values.profileImage.type)) {
-        newErrors.profileImage = 'Only JPG, PNG, and GIF images are allowed.';
-      }
-      const maxSizeMB = 5;
-      if (values.profileImage.size > maxSizeMB * 1024 * 1024) {
-        newErrors.profileImage = `Image size must be less than ${maxSizeMB}MB.`;
-      }
-    }
-
-    return newErrors;
-  };
-
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -114,8 +42,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
       [name]: undefined,
     }));
   };
-
-
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -142,7 +68,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validate();
+    const validationErrors = validateSignInForm(values);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length !== 0) return;
@@ -168,6 +94,11 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
             email: values.email,
             password: values.password,
             type: values.type,
+            firstName: values.firstName,
+            lastName: values.lastName,
+            dateOfBirth: values.dateOfBirth,
+            phoneNumber: values.phoneNumber,
+            imgSrc: imagePreviewUrl || '',
         });
 
         alert('User registered successfully!');
@@ -359,6 +290,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
               id="dateOfBirth"
               name="dateOfBirth"
               type="date"
+              max={new Date().toISOString().split("T")[0]}
               style={{ ...styles.input, borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff' }}
               value={values.dateOfBirth}
               onChange={handleChange}

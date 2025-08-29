@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             <UserInfo
               firstName={userToShow.firstName}
               lastName={userToShow.lastName}
-              email={isGuest ? '' : userToShow.email}
+              //email={isGuest ? '' : userToShow.email}
               type={userToShow.type}
               imgSrc={userToShow.imgSrc}
               messagesLeft={userToShow.messagesLeft}
