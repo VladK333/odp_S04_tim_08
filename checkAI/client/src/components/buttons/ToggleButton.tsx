@@ -25,7 +25,6 @@ const baseStyles: React.CSSProperties = {
 };
 
 const ToggleButton: React.FC<ToggleButtonProps> = ({ isOpen, toggleSidebar }) => {
-  // Define dynamic styles based on isOpen state
   const dynamicStyles: React.CSSProperties = isOpen
     ? {
         right: -10,
@@ -39,7 +38,6 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({ isOpen, toggleSidebar }) =>
         transform: 'translateY(-50%)',
       };
 
-  // Merge base styles with dynamic styles
   const combinedStyles = { ...baseStyles, ...dynamicStyles };
 
   return (

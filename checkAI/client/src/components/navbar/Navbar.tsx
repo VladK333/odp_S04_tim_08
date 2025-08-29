@@ -4,12 +4,11 @@ import HistoryButton from '../buttons/HistoryButton';
 
 interface NavbarProps {
   onNewChatClick: () => void;
-  onHistoryClick?: () => void;
   formsOpen?: boolean;
   isGuest: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick, formsOpen, isGuest }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, formsOpen, isGuest }) => {
   
   return (
     <nav style={styles.navbar}>
@@ -24,7 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, onHistoryClick, formsOp
       </div>
 
       <div style={styles.rightSection}>
-        {!formsOpen && !isGuest && <HistoryButton onClick={onHistoryClick} />}
+        {!formsOpen && !isGuest && <HistoryButton/>}
       </div>
     </nav>
   );
