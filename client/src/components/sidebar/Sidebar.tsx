@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Sidebar.css';
 import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
@@ -21,7 +22,7 @@ interface User {
 interface SidebarProps {
   user: User | null;
   isOpen: boolean;
-   setUser?: React.Dispatch<React.SetStateAction<User | null>>; 
+  setUser?: React.Dispatch<React.SetStateAction<User | null>>; 
 }
 
 const guestUser: User = {
@@ -43,13 +44,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [showSignInForm, setShowSignInForm] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
-  const handleAuthClick = () => {
-    location.reload();
-  };
-
+  const handleAuthClick = () => location.reload();
   const handleDetailsClick = () => setShowDetails(true);
   const handleCloseDetails = () => setShowDetails(false);
 
@@ -62,23 +59,16 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const handleContinueAsGuest = () => setShowLoginForm(false);
 
   const showOverlay = showLoginForm || showSignInForm;
-
   const userToShow = user || guestUser;
   const isGuest = userToShow.type === 'guest';
 
   return (
     <>
-      <aside
-        style={{
-          ...styles.sidebar,
-          width: isOpen ? 300 : 0,
-          overflowX: 'hidden',
-        }}
-      >
-        <div style={styles.topBar}>
+      <aside className="sidebar" style={{ width: isOpen ? 300 : 0, overflowX: 'hidden' }}>
+        <div className="topBar">
           <button
             onClick={handleAuthClick}
-            style={styles.authButton}
+            className="authButton"
             aria-label={!isGuest ? 'Log out' : 'Log in'}
             type="button"
           >
@@ -86,21 +76,11 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </button>
         </div>
 
-        <div style={styles.userInfoWrapper}>
-          <div
-            style={{
-              opacity: isOpen ? 1 : 0,
-              transition: 'opacity 0.3s ease',
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+        <div className="userInfoWrapper">
+          <div style={{ opacity: isOpen ? 1 : 0, transition: 'opacity 0.3s ease', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <UserInfo
               firstName={userToShow.firstName}
               lastName={userToShow.lastName}
-              //email={isGuest ? '' : userToShow.email}
               type={userToShow.type}
               imgSrc={userToShow.imgSrc}
               messagesLeft={userToShow.messagesLeft}
@@ -117,14 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
       {showDetails && <DetailsForm user={userToShow} onClose={handleCloseDetails} />}
 
-      {showDetails && userToShow && (
-        <DetailsForm user={userToShow} onClose={handleCloseDetails} />
-      )}
-
-
       {showOverlay && (
         <div
-          style={styles.overlay}
+          className="overlay"
           onClick={() => {
             if (showLoginForm) setShowLoginForm(false);
             else if (showSignInForm) setShowSignInForm(false);
@@ -133,18 +108,18 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       )}
 
       {showLoginForm && (
-        <div style={styles.loginWrapper}>
+        <div className="loginWrapper">
           <LoginForm
             onClose={handleLoginClose}
             onRegisterClick={handleRegisterClick}
             onContinueAsGuest={handleContinueAsGuest}
-            onLoginSuccess={(user) => setCurrentUser(user)} // ovde setuješ user-a
+            onLoginSuccess={(user) => setCurrentUser(user)}
           />
         </div>
       )}
 
       {showSignInForm && (
-        <div style={styles.loginWrapper}>
+        <div className="loginWrapper">
           <SignInForm
             onClose={handleSignInClose}
             onBackToLogin={() => {
@@ -152,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               setShowLoginForm(true);
             }}
             onRegisterComplete={(newUser) => {
-              setCurrentUser(newUser); // setuje novog registrovanog korisnika
+              setCurrentUser(newUser);
               setShowSignInForm(false);
               setShowLoginForm(true);
             }}
@@ -161,70 +136,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       )}
     </>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  sidebar: {
-    position: 'fixed',
-    left: 0,
-    top: 50,
-    height: 'calc(100vh - 40px)',
-    backgroundColor: '#edc9e9ff',
-    boxShadow: '2px 0px 5px rgba(0,0,0,0.1)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: 0,
-    boxSizing: 'border-box',
-    transition: 'width 0.3s ease',
-    paddingBottom: 20,
-    overflowY: 'auto',
-    zIndex: 1000,
-  },
-  topBar: {
-    width: '100%',
-    padding: '10px 0 10px 10px',
-    display: 'flex',
-    justifyContent: 'flex-start',
-    boxSizing: 'border-box',
-    flexShrink: 0,
-  },
-  userInfoWrapper: {
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  authButton: {
-    backgroundColor: '#cd55abff',
-    color: 'white',
-    border: 'none',
-    padding: '6px 16px',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: 14,
-    userSelect: 'none',
-    transition: 'background-color 0.3s ease',
-  },
-  overlay: {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    zIndex: 2000,
-  },
-  loginWrapper: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: 2100,
-    width: '100%',
-    maxWidth: 400,
-    padding: 16,
-    boxSizing: 'border-box',
-  },
 };
 
 export default Sidebar;

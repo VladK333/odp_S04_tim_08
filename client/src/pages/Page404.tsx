@@ -7,7 +7,7 @@ const NotFoundPage: React.FC = () => {
   return (
     <div
       style={{
-         position: "fixed",   // 👈 fiksira div na ekranu
+         position: "fixed",   //  fiksira div na ekranu
         top: 0,
         left: 0,
         right: 0,

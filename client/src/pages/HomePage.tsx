@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
 import LoginForm from '../forms/logInForm/LogInForm';
 import SignInForm from '../forms/signInForm/SignInForm';
 import Navbar from '../components/navbar/Navbar';
-import Chat from "../components/Chat";
+import Chat from "../components/chat/Chat";
 import type { User } from '../types/User';
+import './HomePage.css'; // Import CSS fajla
 
 const guestUser: User = {
   firstName: 'Guest',
@@ -79,17 +80,17 @@ function HomePage() {
       <Sidebar
         user={currentUser}
         isOpen={showSidebar}
-        setUser={setCurrentUser} // opcionalno
+        setUser={setCurrentUser}
       />
 
-      <div style={{ padding: 20, width: showSidebar ? "60%" : "97%" }}>
+      <div className={`main-content ${showSidebar ? 'sidebar-open' : 'sidebar-closed'}`}>
         <Chat newChatTrigger={newChatCounter} user={currentUser} setUser={setCurrentUser} />
       </div>
 
-      {formsOpen && <div style={styles.overlay} />}
+      {formsOpen && <div className="overlay" />}
 
       {showLogin && (
-        <div style={styles.formWrapper}>
+        <div className="form-wrapper">
           <LoginForm
             onClose={() => setShowLogin(false)}
             onRegisterClick={openSignInForm}
@@ -100,7 +101,7 @@ function HomePage() {
       )}
 
       {showSignInForm && (
-        <div style={styles.formWrapper}>
+        <div className="form-wrapper">
           <SignInForm
             onClose={() => setShowSignInForm(false)}
             onBackToLogin={backToLogin}
@@ -111,23 +112,5 @@ function HomePage() {
     </>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  overlay: {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    backdropFilter: 'blur(4px)',
-    zIndex: 9999,
-  },
-  formWrapper: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: 10000,
-    boxSizing: 'border-box',
-  },
-};
 
 export default HomePage;

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { sendChatCompletion, type ChatMessage } from "../api/lmStudio";
-import ToggleButton from "./buttons/ToggleButton";
+import { sendChatCompletion  } from "../../api/LMStudio/lmStudioApi";
+import type { ChatMessage } from "../../api/LMStudio/IlmStudioApi";
+import ToggleButton from "../buttons/ToggleButton";
 
-import type { User } from "../types/User";
+import type { User } from "../../types/User";
 import "./Chat.css";
 
 interface ChatProps {

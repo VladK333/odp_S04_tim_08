@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import type { ChangeEvent } from 'react';
+import React, { useState, type ChangeEvent } from 'react';
+import './SignInForm.css';
 import CreateButton from '../../components/buttons/CreateButton';
 import type { User } from '../../types/User';
 import { users } from '../../types/User';
 import type { FormValues, FormErrors } from '../../interfaces/auth/signin/IForms';
 import { validateSignInForm } from '../../validators/auth/signin/SignInValidation';
-
 import { signUp } from '../../api/authApi';
 
 interface SignInFormProps {
   onClose: () => void;
-  onBackToLogin: () => void;  // callback za povratak na login formu
-  onRegisterComplete: (user: User) => void; // vraca korisnika u app
+  onBackToLogin: () => void;
+  onRegisterComplete: (user: User) => void;
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegisterComplete }) => {
@@ -23,428 +22,160 @@ const SignInForm: React.FC<SignInFormProps> = ({ onClose, onBackToLogin, onRegis
     dateOfBirth: '',
     phoneNumber: '',
     profileImage: null,
-    type: 'regular', //default vrednost
+    type: 'regular',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setErrors((prev) => ({
-      ...prev,
-      [name]: undefined,
-    }));
+    setValues(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
-    setValues((prev) => ({
-      ...prev,
-      profileImage: file || null,
-    }));
+    setValues(prev => ({ ...prev, profileImage: file || null }));
 
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviewUrl(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreviewUrl(reader.result as string);
       reader.readAsDataURL(file);
     } else {
       setImagePreviewUrl(null);
     }
-    setErrors(prev => ({
-      ...prev,
-      profileImage: undefined,
-    }));
+    setErrors(prev => ({ ...prev, profileImage: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationErrors = validateSignInForm(values);
     setErrors(validationErrors);
-
     if (Object.keys(validationErrors).length !== 0) return;
 
     const newUser: User = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        password: values.password,
-        dateOfBirth: values.dateOfBirth,
-        phoneNumber: values.phoneNumber,
-        type: values.type,
-        imgSrc: imagePreviewUrl || 'https://i.pravatar.cc/150',
-        messagesLeft: values.type === 'premium' ? Infinity : 50,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password,
+      dateOfBirth: values.dateOfBirth,
+      phoneNumber: values.phoneNumber,
+      type: values.type,
+      imgSrc: imagePreviewUrl || 'https://i.pravatar.cc/150',
+      messagesLeft: values.type === 'premium' ? Infinity : 50,
     };
 
-    // dodajemo u privremenu listu frontend-a
     users.push(newUser);
     onRegisterComplete(newUser);
 
     try {
-        await signUp({
-            email: values.email,
-            password: values.password,
-            type: values.type,
-            firstName: values.firstName,
-            lastName: values.lastName,
-            dateOfBirth: values.dateOfBirth,
-            phoneNumber: values.phoneNumber,
-            imgSrc: imagePreviewUrl || '',
-        });
+      await signUp({
+        email: values.email,
+        password: values.password,
+        type: values.type,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        dateOfBirth: values.dateOfBirth,
+        phoneNumber: values.phoneNumber,
+        imgSrc: imagePreviewUrl || '',
+      });
 
-        alert('User registered successfully!');
-        onBackToLogin();
-        onClose();
+      alert('User registered successfully!');
+      onBackToLogin();
+      onClose();
     } catch (error: any) {
-        alert(error.message);
+      alert(error.message);
     }
-};
+  };
 
   return (
-    <form style={styles.form} noValidate onSubmit={handleSubmit}>
-      {/* Back arrow button top-left */}
-      <button
-        type="button"
-        onClick={onBackToLogin}
-        aria-label="Back to login"
-        style={styles.backButton}
-      >
-        ←
-      </button>
+    <form className="signInForm" noValidate onSubmit={handleSubmit}>
+      <button type="button" onClick={onBackToLogin} aria-label="Back to login" className="backButton">←</button>
+      <h2 className="title">Create Account</h2>
 
-      <h2 style={styles.title}>Create Account</h2>
-
-      <div style={styles.contentWrapper}>
-        {/* Left side: Image preview or placeholder */}
-        <div style={styles.imageContainer}>
+      <div className="contentWrapper">
+        <div className="imageContainer">
           {imagePreviewUrl ? (
-            <img
-              src={imagePreviewUrl}
-              alt="Profile preview"
-              style={styles.imagePreview}
-            />
+            <img src={imagePreviewUrl} alt="Profile preview" className="imagePreview" />
           ) : (
-            <div style={styles.imagePlaceholder}>No image selected</div>
+            <div className="imagePlaceholder">No image selected</div>
           )}
-          <label htmlFor="profileImage" style={styles.fileLabel}>
-            Choose Image
-          </label>
+          <label htmlFor="profileImage" className="fileLabel">Choose Image</label>
           <input
             id="profileImage"
             name="profileImage"
             type="file"
             accept="image/*"
-            style={styles.fileInput}
+            className="fileInput"
             onChange={handleImageChange}
             aria-invalid={!!errors.profileImage}
             aria-describedby="profileImage-error"
           />
-          {errors.profileImage && (
-            <div id="profileImage-error" style={styles.errorText}>
-              {errors.profileImage}
-            </div>
-          )}
+          {errors.profileImage && <div id="profileImage-error" className="errorText">{errors.profileImage}</div>}
 
-
-          {/*  izbor tipa korsnika */}
-          <label htmlFor="type" style={{ ...styles.label, marginTop: 20 }}>
-            Account Type
-          </label>
-          <select
-            id="type"
-            name="type"
-            value={values.type}
-            onChange={handleChange}
-            style={styles.select}
-          >
+          <label htmlFor="type" className="label" style={{ marginTop: 20 }}>Account Type</label>
+          <select id="type" name="type" value={values.type} onChange={handleChange} className="select">
             <option value="regular">Regular</option>
             <option value="premium">Premium</option>
           </select>
         </div>
 
-        {/* Right side: Two columns of inputs */}
-        <div style={styles.fieldsContainer}>
-          {/* First column */}
-          <div style={styles.column}>
-            <label htmlFor="firstName" style={styles.label}>
-              First Name
-            </label>
-            <input
-              id="firstName"
-              name="firstName"
-              type="text"
-              placeholder="Enter your first name"
-              style={{ ...styles.input, borderColor: errors.firstName ? '#d32f2f' : '#d252bdff' }}
-              value={values.firstName}
-              onChange={handleChange}
-              autoComplete="given-name"
-              aria-invalid={!!errors.firstName}
-              aria-describedby="firstName-error"
-            />
-            {errors.firstName && (
-              <div id="firstName-error" style={styles.errorText}>
-                {errors.firstName}
-              </div>
-            )}
+        <div className="fieldsContainer">
+          <div className="column">
+            <label htmlFor="firstName" className="label">First Name</label>
+            <input id="firstName" name="firstName" type="text" placeholder="Enter your first name"
+              className="input" style={{ borderColor: errors.firstName ? '#d32f2f' : '#d252bdff' }}
+              value={values.firstName} onChange={handleChange} autoComplete="given-name"
+              aria-invalid={!!errors.firstName} aria-describedby="firstName-error" />
+            {errors.firstName && <div id="firstName-error" className="errorText">{errors.firstName}</div>}
 
-            <label htmlFor="email" style={styles.label}>
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              style={{ ...styles.input, borderColor: errors.email ? '#d32f2f' : '#d252bdff' }}
-              value={values.email}
-              onChange={handleChange}
-              autoComplete="email"
-              aria-invalid={!!errors.email}
-              aria-describedby="email-error"
-            />
-            {errors.email && (
-              <div id="email-error" style={styles.errorText}>
-                {errors.email}
-              </div>
-            )}
+            <label htmlFor="email" className="label">Email</label>
+            <input id="email" name="email" type="email" placeholder="Enter your email"
+              className="input" style={{ borderColor: errors.email ? '#d32f2f' : '#d252bdff' }}
+              value={values.email} onChange={handleChange} autoComplete="email"
+              aria-invalid={!!errors.email} aria-describedby="email-error" />
+            {errors.email && <div id="email-error" className="errorText">{errors.email}</div>}
 
-            <label htmlFor="phoneNumber" style={styles.label}>
-              Phone Number
-            </label>
-            <input
-              id="phoneNumber"
-              name="phoneNumber"
-              type="tel"
-              placeholder="Enter your phone number"
-              style={{ ...styles.input, borderColor: errors.phoneNumber ? '#d32f2f' : '#d252bdff' }}
-              value={values.phoneNumber}
-              onChange={handleChange}
-              autoComplete="tel"
-              aria-invalid={!!errors.phoneNumber}
-              aria-describedby="phoneNumber-error"
-            />
-            {errors.phoneNumber && (
-              <div id="phoneNumber-error" style={styles.errorText}>
-                {errors.phoneNumber}
-              </div>
-            )}
+            <label htmlFor="phoneNumber" className="label">Phone Number</label>
+            <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="Enter your phone number"
+              className="input" style={{ borderColor: errors.phoneNumber ? '#d32f2f' : '#d252bdff' }}
+              value={values.phoneNumber} onChange={handleChange} autoComplete="tel"
+              aria-invalid={!!errors.phoneNumber} aria-describedby="phoneNumber-error" />
+            {errors.phoneNumber && <div id="phoneNumber-error" className="errorText">{errors.phoneNumber}</div>}
           </div>
 
-          {/* Second column */}
-          <div style={styles.column}>
-            <label htmlFor="lastName" style={styles.label}>
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              name="lastName"
-              type="text"
-              placeholder="Enter your last name"
-              style={{ ...styles.input, borderColor: errors.lastName ? '#d32f2f' : '#d252bdff' }}
-              value={values.lastName}
-              onChange={handleChange}
-              autoComplete="family-name"
-              aria-invalid={!!errors.lastName}
-              aria-describedby="lastName-error"
-            />
-            {errors.lastName && (
-              <div id="lastName-error" style={styles.errorText}>
-                {errors.lastName}
-              </div>
-            )}
+          <div className="column">
+            <label htmlFor="lastName" className="label">Last Name</label>
+            <input id="lastName" name="lastName" type="text" placeholder="Enter your last name"
+              className="input" style={{ borderColor: errors.lastName ? '#d32f2f' : '#d252bdff' }}
+              value={values.lastName} onChange={handleChange} autoComplete="family-name"
+              aria-invalid={!!errors.lastName} aria-describedby="lastName-error" />
+            {errors.lastName && <div id="lastName-error" className="errorText">{errors.lastName}</div>}
 
-            <label htmlFor="password" style={styles.label}>
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              style={{ ...styles.input, borderColor: errors.password ? '#d32f2f' : '#d252bdff' }}
-              value={values.password}
-              onChange={handleChange}
-              autoComplete="new-password"
-              aria-invalid={!!errors.password}
-              aria-describedby="password-error"
-            />
-            {errors.password && (
-              <div id="password-error" style={styles.errorText}>
-                {errors.password}
-              </div>
-            )}
+            <label htmlFor="password" className="label">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter your password"
+              className="input" style={{ borderColor: errors.password ? '#d32f2f' : '#d252bdff' }}
+              value={values.password} onChange={handleChange} autoComplete="new-password"
+              aria-invalid={!!errors.password} aria-describedby="password-error" />
+            {errors.password && <div id="password-error" className="errorText">{errors.password}</div>}
 
-            <label htmlFor="dateOfBirth" style={styles.label}>
-              Date of Birth
-            </label>
-            <input
-              id="dateOfBirth"
-              name="dateOfBirth"
-              type="date"
-              max={new Date().toISOString().split("T")[0]}
-              style={{ ...styles.input, borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff' }}
-              value={values.dateOfBirth}
-              onChange={handleChange}
-              aria-invalid={!!errors.dateOfBirth}
-              aria-describedby="dateOfBirth-error"
-            />
-            {errors.dateOfBirth && (
-              <div id="dateOfBirth-error" style={styles.errorText}>
-                {errors.dateOfBirth}
-              </div>
-            )}
+            <label htmlFor="dateOfBirth" className="label">Date of Birth</label>
+            <input id="dateOfBirth" name="dateOfBirth" type="date"
+              max={new Date().toISOString().split("T")[0]} className="input"
+              style={{ borderColor: errors.dateOfBirth ? '#d32f2f' : '#d252bdff' }}
+              value={values.dateOfBirth} onChange={handleChange}
+              aria-invalid={!!errors.dateOfBirth} aria-describedby="dateOfBirth-error" />
+            {errors.dateOfBirth && <div id="dateOfBirth-error" className="errorText">{errors.dateOfBirth}</div>}
           </div>
         </div>
       </div>
 
-      <div style={styles.buttonWrapper}>
+      <div className="buttonWrapper">
         <CreateButton />
       </div>
     </form>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  backButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    background: 'transparent',
-    border: 'none',
-    fontSize: 24,
-    cursor: 'pointer',
-    color: '#d252bdff',
-    userSelect: 'none',
-  },
-  form: {
-    //maxWidth: 1000,
-    width: 900,
-    //margin: '0 auto',
-    padding: 40,
-    borderRadius: 16,
-    backgroundColor: '#f9f7fa',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
-    display: 'flex',
-    flexDirection: 'column',
-    boxSizing: 'border-box',
-    position: 'relative',
-  },
-  title: {
-    marginBottom: 32,
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#d252bdff',
-    textAlign: 'center',
-  },
-  contentWrapper: {
-    display: 'flex',
-    gap: 40,
-  },
-  imageContainer: {
-    flexShrink: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 160,
-  },
-  imagePreview: {
-    width: 140,
-    height: 140,
-    borderRadius: '50%',
-    objectFit: 'cover',
-    border: '2.5px solid #d252bdff',
-    marginBottom: 12,
-  },
-  imagePlaceholder: {
-    width: 140,
-    height: 140,
-    borderRadius: '50%',
-    border: '2.5px dashed #d252bdff',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: '#d252bdff',
-    fontSize: 14,
-    marginBottom: 12,
-    textAlign: 'center',
-    padding: 10,
-  },
-  fileLabel: {
-    cursor: 'pointer',
-    backgroundColor: '#d252bdff',
-    color: 'white',
-    padding: '8px 14px',
-    borderRadius: 8,
-    fontWeight: 600,
-    fontSize: 14,
-    userSelect: 'none',
-    boxShadow: '0 3px 10px rgba(231, 35, 201, 0.8)',
-    transition: 'background-color 0.3s ease',
-    textAlign: 'center',
-    width: '100%',
-  },
-  fileInput: {
-    display: 'none',
-  },
-  fieldsContainer: {
-    flex: 1,
-    display: 'flex',
-    gap: 40,
-  },
-  column: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  label: {
-    marginBottom: 8,
-    fontWeight: 600,
-    fontSize: 15,
-    color: '#333',
-  },
-  input: {
-    marginBottom: 22,
-    padding: '14px 18px',
-    borderRadius: 10,
-    border: '1.5px solid #d252bdff',
-    fontSize: 16,
-    outline: 'none',
-    transition: 'border-color 0.3s ease',
-  },
-  errorText: {
-    color: '#d32f2f',
-    fontSize: 14,
-    marginTop: -16,
-    marginBottom: 16,
-  },
-  buttonWrapper: {
-    marginTop: 32,
-    display: 'flex',
-    justifyContent: 'center',
-  },
-
-  select: {
-    marginTop: 8,
-    padding: '10px 14px',
-    borderRadius: 8,
-    border: '1.5px solid #d252bdff',
-    fontSize: 15,
-    outline: 'none',
-    transition: 'border-color 0.3s ease',
-    width: '100%',
-    cursor: 'pointer',
-  },
-
-
 };
 
 export default SignInForm;

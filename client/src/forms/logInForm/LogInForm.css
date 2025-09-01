@@ -1,0 +1,81 @@
+.loginForm {
+  width: 360px;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #f9f7fa;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.loginFormTitle {
+  margin-bottom: 24px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #d252bdff;
+  text-align: center;
+}
+
+.loginFormLabel {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.loginFormInput {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1.5px solid #d252bdff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.loginButton {
+  margin-top: 8px;
+  padding: 10px 0;
+  border-radius: 8px;
+  border: none;
+  background-color: #d252bdff;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(156, 53, 144, 0.8);
+  transition: background-color 0.3s ease;
+}
+
+.loginOptions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.loginOptionButton {
+  background: none;
+  border: none;
+  color: #d252bdff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  user-select: none;
+  text-decoration: underline;
+}
+
+.loginSeparator {
+  color: #999;
+  font-size: 14px;
+}
+
+.loginError {
+  color: red;
+  font-weight: 200;
+  margin-bottom: 8px;
+  text-align: center;
+}

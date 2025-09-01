@@ -1,0 +1,32 @@
+/* Overlay for forms */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+}
+
+/* Wrapper for login/signin forms */
+.form-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  box-sizing: border-box;
+}
+
+/* Main content container (Chat) */
+.main-content {
+  padding: 20px;
+  transition: width 0.3s ease;
+}
+
+.main-content.sidebar-open {
+  width: 60%;
+}
+
+.main-content.sidebar-closed {
+  width: 97%;
+}

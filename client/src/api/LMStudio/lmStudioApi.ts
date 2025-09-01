@@ -1,10 +1,6 @@
+import type { ChatMessage } from "./IlmStudioApi";
 
-export interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
-
-const API_URL = "http://127.0.0.1:1234/v1/chat/completions"; // LM Studio server
+const API_URL = import.meta.env.VITE_LM_API_URL as string; // LM Studio server
 
 export async function sendChatCompletion(messages: ChatMessage[]): Promise<string> {
   try {
@@ -25,7 +21,7 @@ export async function sendChatCompletion(messages: ChatMessage[]): Promise<strin
 
     const data = await response.json();
     return data.choices?.[0]?.message?.content ?? "⚠️ Nema odgovora od modela";
-  } catch (err: any) {
-    return `Greška: ${err.message}`;
+  } catch {
+    return "⚠️ Greška: došlo je do problema prilikom komunikacije sa LM Studio.";
   }
 }

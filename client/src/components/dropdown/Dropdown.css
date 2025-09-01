@@ -1,0 +1,30 @@
+.dropdown {
+  position: absolute;
+  top: 59px;
+  left: -533px;
+  background-color: #222;
+  border: 1px solid #cd55abff;
+  border-radius: 6px;
+  padding: 15px 20px;
+  color: white;
+  z-index: 1000;
+  height: 527px;
+  width: 1147px;
+}
+
+.dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dropdown li:hover {
+  background-color: #cd55abff;
+}

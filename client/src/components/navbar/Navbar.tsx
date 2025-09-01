@@ -1,33 +1,39 @@
 import React from 'react';
 import NewChatButton from '../buttons/NewChatButton';
 import HistoryButton from '../buttons/HistoryButton';
+import './Navbar.css';
 
 interface NavbarProps {
   onNewChatClick: () => void;
   formsOpen?: boolean;
   isGuest: boolean;
+  onHistoryClick?: () => void; // <-- dodaj ovo
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, formsOpen, isGuest }) => {
-  
   return (
-    <nav style={styles.navbar}>
-      <div style={styles.leftSection}>
-        <div style={styles.appName}>CheckAI</div>
+    <nav className="navbar">
+      <div className="leftSection">
+        <div className="appName">CheckAI</div>
 
         <NewChatButton
           onNewChatClick={onNewChatClick}
           formsOpen={formsOpen}
-          style={styles.newChatButton}
+          className="newChatButton"
         />
       </div>
 
-      <div style={styles.rightSection}>
-        {!formsOpen && !isGuest && <HistoryButton/>}
+      <div className="rightSection">
+        {!formsOpen && !isGuest && <HistoryButton className="historyButton" />}
       </div>
     </nav>
   );
 };
+
+export default Navbar;
+
+
+/* ne znam da li je sjebao pa bolje da imamo css kako treba da izgleda
 
 const styles: Record<string, React.CSSProperties> = {
   navbar: {
@@ -85,4 +91,4 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export default Navbar;
+export default Navbar;*/

@@ -1,27 +1,22 @@
 import React from 'react';
+import './NewChatButton.css';
 
 interface NewChatButtonProps {
   onNewChatClick: () => void;
   formsOpen?: boolean;
-  style?: React.CSSProperties;
+  className?: string;
 }
 
-const NewChatButton: React.FC<NewChatButtonProps> = ({ onNewChatClick, formsOpen = false, style }) => {
+const NewChatButton: React.FC<NewChatButtonProps> = ({
+  onNewChatClick,
+  formsOpen = false,
+  className,
+}) => {
+  const buttonClass = `${className || 'newChatButton'} ${formsOpen ? 'blur' : ''}`;
+
   return (
     <button
-      style={{
-        padding: '8px 16px',
-        borderRadius: 12,
-        border: 'none',
-        backgroundColor: '#d252bdff',
-        color: 'white',
-        fontWeight: '600',
-        userSelect: 'none',
-        transition: 'filter 0.3s ease',
-        filter: formsOpen ? 'blur(2px)' : 'none',
-        cursor: formsOpen ? 'unset' : 'pointer',
-        ...style,
-      }}
+      className={buttonClass}
       onClick={!formsOpen ? onNewChatClick : undefined}
       disabled={formsOpen}
       aria-disabled={formsOpen}
