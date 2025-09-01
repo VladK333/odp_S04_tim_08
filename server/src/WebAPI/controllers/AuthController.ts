@@ -24,17 +24,17 @@ export class AuthController {
    */
   private async prijava(req: Request, res: Response): Promise<void> {
     try {
-      const { korisnickoIme, lozinka } = req.body;
+      const { email, lozinka } = req.body;
 
       // Validacija input parametara
-      const rezultat = validacijaPodatakaAuth(korisnickoIme, lozinka);
+      const rezultat = validacijaPodatakaAuth(email, lozinka);
 
       if (!rezultat.uspesno) {
         res.status(400).json({ success: false, message: rezultat.poruka });
         return;
       }
 
-      const result = await this.authService.prijava(korisnickoIme, lozinka);
+      const result = await this.authService.prijava(email, lozinka);
 
       // Proveravamo da li je prijava uspešna
       if (result.id !== 0) {
@@ -42,7 +42,7 @@ export class AuthController {
         const token = jwt.sign(
           { 
             id: result.id, 
-            korisnickoIme: result.korisnickoIme, 
+            email: result.email, 
             uloga: result.uloga,
           }, process.env.JWT_SECRET ?? "", { expiresIn: '6h' });
 
@@ -64,15 +64,15 @@ export class AuthController {
    */
   private async registracija(req: Request, res: Response): Promise<void> {
     try {
-      const { korisnickoIme, lozinka, uloga } = req.body;
-      const rezultat = validacijaPodatakaAuth(korisnickoIme, lozinka);
+      const {email, lozinka, uloga, ime, prezime, datumR, telefon, imgSrc } = req.body;
+      const rezultat = validacijaPodatakaAuth(email, lozinka);
 
       if (!rezultat.uspesno) {
         res.status(400).json({ success: false, message: rezultat.poruka });
         return;
       }
 
-      const result = await this.authService.registracija(korisnickoIme, uloga, lozinka);
+      const result = await this.authService.registracija(email, lozinka, uloga, ime, prezime, datumR, telefon, imgSrc, 50, new Date());
       
       // Proveravamo da li je registracija uspešna
       if (result.id !== 0) {
@@ -80,7 +80,7 @@ export class AuthController {
         const token = jwt.sign(
           { 
             id: result.id, 
-            korisnickoIme: result.korisnickoIme, 
+            email: result.email, 
             uloga: result.uloga,
           }, process.env.JWT_SECRET ?? "", { expiresIn: '6h' });
 

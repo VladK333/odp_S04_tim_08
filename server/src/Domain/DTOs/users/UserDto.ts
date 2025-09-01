@@ -1,7 +1,9 @@
+import { UserRole } from "../../enums/UserRole";
+
 export class UserDto {
   public constructor(
     public id: number = 0,
-    public korisnickoIme: string = "",
-    public uloga: string = "user",
+    public email: string = "",
+    public uloga: UserRole = UserRole.Guest,
   ) {}
 }

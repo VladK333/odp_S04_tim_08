@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 interface JwtPayload {
   id: number;
-  korisnickoIme: string;
+  email: string;
   uloga: string;
 }
 
