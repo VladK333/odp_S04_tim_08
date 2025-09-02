@@ -13,22 +13,22 @@ export class UserRepository implements IUserRepository {
 
       const [result] = await db.execute<ResultSetHeader>(query, [
         user.email,
-        user.lozinka,
-        user.uloga,
-        user.ime,
-        user.prezime,
-        user.datumR,
-        user.telefon,
+        user.password,
+        user.role,
+        user.firstName,
+        user.lastName,
+        user.dateOfBirth,
+        user.phoneNumber,
         user.imgSrc,
-        user.preostaloPoruka,
-        user.prvaPorukaVreme
+        user.messagesLeft,
+        user.firstMessageTime
       ]);
 
 
       if (result.insertId) {
         // Vraćamo novog korisnika sa dodeljenim ID-om
-        return new User(result.insertId, user.email, user.lozinka, user.uloga, user.ime, user.prezime, user.datumR, user.telefon,
-                          user.imgSrc, user.preostaloPoruka, user.prvaPorukaVreme);
+        return new User(result.insertId, user.email, user.password, user.role, user.firstName, user.lastName, user.dateOfBirth, user.phoneNumber,
+                          user.imgSrc, user.messagesLeft, user.firstMessageTime);
       }
 
       // Vraćamo prazan objekat ako kreiranje nije uspešno
@@ -104,15 +104,15 @@ export class UserRepository implements IUserRepository {
 
       const [result] = await db.execute<ResultSetHeader>(query, [
         user.email,
-        user.lozinka,
-        user.uloga,
-        user.ime,
-        user.prezime,
-        user.datumR,
-        user.telefon,
+        user.password,
+        user.role,
+        user.firstName,
+        user.lastName,
+        user.dateOfBirth,
+        user.phoneNumber,
         user.imgSrc,
-        user.preostaloPoruka,
-        user.prvaPorukaVreme,
+        user.messagesLeft,
+        user.firstMessageTime,
         user.id
       ]);
 

@@ -13,8 +13,8 @@ export class AuthService implements IAuthService {
   async prijava(email: string, lozinka: string): Promise<UserAuthDataDto> {
     const user = await this.userRepository.getByEmail(email);
 
-    if (user.id !== 0 && await bcrypt.compare(lozinka, user.lozinka)) {
-      return new UserAuthDataDto(user.id, user.email, user.uloga);
+    if (user.id !== 0 && await bcrypt.compare(lozinka, user.password)) {
+      return new UserAuthDataDto(user.id, user.email, user.role);
     }
 
     return new UserAuthDataDto(); // Neispravno korisničko ime ili lozinka
@@ -36,7 +36,7 @@ export class AuthService implements IAuthService {
     );
 
     if (newUser.id !== 0) {
-      return new UserAuthDataDto(newUser.id, newUser.email, newUser.uloga);
+      return new UserAuthDataDto(newUser.id, newUser.email, newUser.role);
     }
 
     return new UserAuthDataDto(); // Registracija nije uspela

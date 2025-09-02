@@ -43,7 +43,7 @@ export class AuthController {
           { 
             id: result.id, 
             email: result.email, 
-            uloga: result.uloga,
+            uloga: result.role,
           }, process.env.JWT_SECRET ?? "", { expiresIn: '6h' });
 
         res.status(200).json({success: true, message: 'Uspešna prijava', data: token});
@@ -81,7 +81,7 @@ export class AuthController {
           { 
             id: result.id, 
             email: result.email, 
-            uloga: result.uloga,
+            uloga: result.role,
           }, process.env.JWT_SECRET ?? "", { expiresIn: '6h' });
 
 

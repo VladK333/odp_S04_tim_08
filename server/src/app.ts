@@ -29,6 +29,6 @@ const userController = new UserController(userService);
 
 // Registering routes
 app.use('/api/v1', authController.getRouter());
-app.use('/api/v1', userController.getRouter());
+app.use('/api/v1', userController.router);
 
 export default app;
