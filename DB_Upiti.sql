@@ -1,18 +1,20 @@
 DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) NOT NULL,
-  `lozinka` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ime` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `prezime` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `datumR` varchar(255) DEFAULT NULL,
-  `telefon` varchar(255) DEFAULT NULL,
-  `imgPath` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `tip` enum('regular','premium') NOT NULL DEFAULT 'regular',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    date_of_birth DATE,
+    phone_number VARCHAR(20),
+    type ENUM('guest', 'regular', 'premium') NOT NULL DEFAULT 'regular',
+    img_src VARCHAR(255) DEFAULT '/images/user.png',
+    messages_left INT DEFAULT 50,
+    messages_reset_at TIMESTAMP NULL, -- vreme kada kreće brojanje 24h
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 LOCK TABLES `users` WRITE;
 
