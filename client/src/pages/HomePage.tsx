@@ -1,6 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
 import LoginForm from '../components/auth/logInForm/LogInForm';
+import RegisterForm from '../components/auth/registerForm/RegisterForm';
 import Navbar from '../components/navbar/Navbar';
 import Chat from "../components/chat/Chat";
 import type { User } from '../types/User';
@@ -20,16 +21,12 @@ const guestUser: User = {
 };
 
 interface HomePageProps {
-  authService: IAuthAPIService;   // injected via props
-  
+  authService: IAuthAPIService; // injected via props
 }
 
-
-const HomePage: React.FC<HomePageProps> = ({
-  authService
-}) => {
+const HomePage: React.FC<HomePageProps> = ({ authService }) => {
   const [showLogin, setShowLogin] = useState(true);
-  const [showSignInForm, setShowSignInForm] = useState(false);
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [showSidebar] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [newChatCounter, setNewChatCounter] = useState(0);
@@ -39,47 +36,37 @@ const HomePage: React.FC<HomePageProps> = ({
     setIsGuest(true);
     setCurrentUser(guestUser);
     setShowLogin(false);
-    setShowSignInForm(false);
+    setShowRegisterForm(false);
   };
 
-  const onClose = () =>
-  {
+  const openRegisterForm = () => {
     setShowLogin(false);
-  }
-
-  const openSignInForm = () => {
-    setShowLogin(false);
-    setShowSignInForm(true);
+    setShowRegisterForm(true);
   };
 
   const backToLogin = () => {
-    setShowSignInForm(false);
+    setShowRegisterForm(false);
     setShowLogin(true);
   };
 
   const handleNewChat = () => {
     setNewChatCounter(prev => prev + 1);
     setShowLogin(false);
-    setShowSignInForm(false);
+    setShowRegisterForm(false);
   };
 
   const handleHistoryClick = () => {
     console.log('History clicked');
   };
 
-  const handleRegisterComplete = (newUser: User) => {
-    setCurrentUser(newUser);
-    backToLogin();
-  };
-
   const handleLoginSuccess = (user: User) => {
     setCurrentUser(user);
     setShowLogin(false);
-    setShowSignInForm(false);
+    setShowRegisterForm(false);
     setIsGuest(user.type === 'guest');
   };
 
-  const formsOpen = showLogin || showSignInForm;
+  const formsOpen = showLogin || showRegisterForm;
 
   return (
     <>
@@ -105,26 +92,26 @@ const HomePage: React.FC<HomePageProps> = ({
       {showLogin && (
         <div className="form-wrapper">
           <LoginForm
-          authService={authService}
-            onClose={onClose}
-            onRegisterClick={openSignInForm}
+            authService={authService}
+            onClose={() => setShowLogin(false)}
+            onRegisterClick={openRegisterForm}
             onContinueAsGuest={continueAsGuest}
-            
           />
         </div>
       )}
 
-      {/* {showSignInForm && (
+      {showRegisterForm && (
         <div className="form-wrapper">
-          <SignInForm
-            onClose={() => setShowSignInForm(false)}
-            onBackToLogin={backToLogin}
-            onRegisterComplete={handleRegisterComplete}
+          <RegisterForm
+            authService={authService}
+            onClose={() => setShowRegisterForm(false)}
+            onLoginClick={backToLogin}
+            onContinueAsGuest={continueAsGuest}
           />
         </div>
-      )} */}
+      )}
     </>
   );
-}
+};
 
 export default HomePage;

@@ -4,7 +4,6 @@ import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
 import LoginForm from '../auth/logInForm/LogInForm';
-import SignInForm from '../../forms/signInForm/SignInForm';
 import ToggleButton from '../buttons/ToggleButton';
 
 interface User {
@@ -107,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         />
       )}
 
-      {showLoginForm && (
+      {/* {showLoginForm && (
         <div className="loginWrapper">
           <LoginForm
             onClose={handleLoginClose}
@@ -116,9 +115,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             onLoginSuccess={(user) => setCurrentUser(user)}
           />
         </div>
-      )}
+      )} */}
 
-      {showSignInForm && (
+      {/* {showSignInForm && (
         <div className="loginWrapper">
           <SignInForm
             onClose={handleSignInClose}
@@ -133,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             }}
           />
         </div>
-      )}
+      )} */}
     </>
   );
 };
