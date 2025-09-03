@@ -1,4 +1,5 @@
+import type { User } from "../../types/User";
 
 export interface IUserAPIService {
-  getUserById(id: number): Promise<User | undefined>;
+  getUserById(id: number, token: string): Promise<User | undefined>;
 }

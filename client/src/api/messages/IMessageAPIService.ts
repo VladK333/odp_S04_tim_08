@@ -1,13 +1,14 @@
+import type { MessageDto } from "../../models/messages/MessageDto";
 
 export interface IMessageAPIService {
   createMessage(
     text: string,
     isSentByAI: boolean,
     sentTime: string,
-    chatId: number
-  ): Promise<Message | undefined>;
+    chatId: number, token: string
+  ): Promise<MessageDto | undefined>;
 
-  getMessagesByChatId(chatId: number): Promise<Message[]>;
+  getMessagesByChatId(chatId: number, token: string): Promise<MessageDto[]>;
 
-  deleteMessagesByChatId(chatId: number): Promise<boolean>;
+  deleteMessagesByChatId(chatId: number, token: string): Promise<boolean>;
 }

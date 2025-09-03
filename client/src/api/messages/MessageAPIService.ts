@@ -1,6 +1,6 @@
 import axios from "axios";
+import type { MessageDto } from "../../models/messages/MessageDto";
 import type { IMessageAPIService } from "./IMessageAPIService";
-import type { Message } from "../../types/messages/Message";
 
 const API_URL: string = import.meta.env.VITE_API_URL + "messages";
 
@@ -9,13 +9,13 @@ export const messageApi: IMessageAPIService = {
     text: string,
     isSentByAI: boolean,
     sentTime: string,
-    chatId: number
-  ): Promise<Message | undefined> {
+    chatId: number, token: string
+  ): Promise<MessageDto | undefined> {
     try {
-      const res = await axios.post<Message>(
+      const res = await axios.post<MessageDto>(
         API_URL,
         { text, isSentByAI, sentTime, chatId },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     } catch (error) {
@@ -24,11 +24,11 @@ export const messageApi: IMessageAPIService = {
     }
   },
 
-  async getMessagesByChatId(chatId: number): Promise<Message[]> {
+  async getMessagesByChatId(chatId: number, token: string): Promise<MessageDto[]> {
     try {
-      const res = await axios.get<Message[]>(
+      const res = await axios.get<MessageDto[]>(
         `${API_URL}/${chatId}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data;
     } catch (error) {
@@ -37,11 +37,11 @@ export const messageApi: IMessageAPIService = {
     }
   },
 
-  async deleteMessagesByChatId(chatId: number): Promise<boolean> {
+  async deleteMessagesByChatId(chatId: number, token: string): Promise<boolean> {
     try {
       const res = await axios.delete<{ success: boolean }>(
         `${API_URL}/${chatId}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return res.data.success;
     } catch (error) {
