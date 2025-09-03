@@ -61,6 +61,29 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async getByUsername(usernamme: string): Promise<User> {
+    try {
+      const query = `SELECT * FROM users WHERE username = ?`;
+      const [rows] = await db.execute<RowDataPacket[]>(query, [usernamme]);
+
+      if (rows.length > 0) {
+        const row = rows[0];
+        return new User(
+          row.id,
+          row.fullname,
+          row.email,
+          row.password,
+          row.isPremium,
+          row.messagesLeft,
+          row.firstMessageSentForPeriod
+        );
+      }
+      return new User();
+    } catch {
+      return new User();
+    }
+  }
+
   async update(user: User): Promise<User> {
     try {
       const query = `
