@@ -61,10 +61,10 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async getByUsername(usernamme: string): Promise<User> {
+  async getByEmail(email: string): Promise<User> {
     try {
-      const query = `SELECT * FROM users WHERE username = ?`;
-      const [rows] = await db.execute<RowDataPacket[]>(query, [usernamme]);
+      const query = `SELECT * FROM users WHERE email = ?`;
+      const [rows] = await db.execute<RowDataPacket[]>(query, [email]);
 
       if (rows.length > 0) {
         const row = rows[0];

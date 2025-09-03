@@ -1,4 +1,4 @@
-import { UserAuthDataDto } from "../../Domain/DTOs/auth/UserAuthDataDto";
+import { UserDto } from "../../Domain/DTOs/users/UserDto";
 import { User } from "../../Domain/models/User";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IAuthService } from "../../Domain/services/auth/IAuthService";
@@ -9,34 +9,49 @@ export class AuthService implements IAuthService {
 
   public constructor(private userRepository: IUserRepository) {}
 
-  async prijava(korisnickoIme: string, lozinka: string): Promise<UserAuthDataDto> {
-    const user = await this.userRepository.getByUsername(korisnickoIme);
+  async login(username: string, password: string): Promise<UserDto> {
+    const user = await this.userRepository.getByEmail(username);
 
-    if (user.id !== 0 && await bcrypt.compare(lozinka, user.lozinka)) {
-      return new UserAuthDataDto(user.id, user.korisnickoIme, user.uloga);
+    if (user.id !== 0 && await bcrypt.compare(password, user.password)) {
+      return new UserDto(
+        user.id,
+        user.fullname,
+        user.email,
+        user.password,  
+        user.isPremium,
+        user.messagesLeft,
+        user.firstMessageSentForPeriod
+      );
     }
 
-    return new UserAuthDataDto(); // Neispravno korisničko ime ili lozinka
+    return new UserDto(); 
   }
 
-  async registracija(korisnickoIme: string, uloga: string, lozinka: string): Promise<UserAuthDataDto> {
-    const existingUser = await this.userRepository.getByUsername(korisnickoIme);
-    
+  async register(fullname: string, email: string, password: string, isPremium: boolean): Promise<UserDto> {
+    const existingUser = await this.userRepository.getByEmail(email);
+
     if (existingUser.id !== 0) {
-      return new UserAuthDataDto(); // Korisnik već postoji
+      return new UserDto(); 
     }
 
-    // Hash-ujemo lozinku pre čuvanja
-    const hashedPassword = await bcrypt.hash(lozinka, this.saltRounds);
+    const hashedPassword = await bcrypt.hash(password, this.saltRounds);
 
     const newUser = await this.userRepository.create(
-      new User(0, korisnickoIme, uloga, hashedPassword)
+      new User(0, fullname, email, hashedPassword, isPremium, 50, Date.now())
     );
 
     if (newUser.id !== 0) {
-      return new UserAuthDataDto(newUser.id, newUser.korisnickoIme, newUser.uloga);
+      return new UserDto(
+        newUser.id,
+        newUser.fullname,
+        newUser.email,
+        newUser.password, 
+        newUser.isPremium,
+        newUser.messagesLeft,
+        newUser.firstMessageSentForPeriod
+      );
     }
 
-    return new UserAuthDataDto(); // Registracija nije uspela
+    return new UserDto(); 
   }
 }

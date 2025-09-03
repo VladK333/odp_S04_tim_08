@@ -14,6 +14,10 @@ export class MessageService implements IMessageService {
       messageDto.sentTime,
       messageDto.chatId
     );
+
+    // proveru korisnika jel premium ako nije, onda proveri limit i azuriraj timestamp 
+    // po potrebi...
+
     const created = await this.messageRepository.create(message);
     return new MessageDto(
       created.id,
