@@ -1,0 +1,52 @@
+import axios from "axios";
+import type { IMessageAPIService } from "./IMessageAPIService";
+import type { Message } from "../../types/messages/Message";
+
+const API_URL: string = import.meta.env.VITE_API_URL + "messages";
+
+export const messageApi: IMessageAPIService = {
+  async createMessage(
+    text: string,
+    isSentByAI: boolean,
+    sentTime: string,
+    chatId: number
+  ): Promise<Message | undefined> {
+    try {
+      const res = await axios.post<Message>(
+        API_URL,
+        { text, isSentByAI, sentTime, chatId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      return res.data;
+    } catch (error) {
+      console.error("Greška pri kreiranju poruke:", error);
+      return undefined;
+    }
+  },
+
+  async getMessagesByChatId(chatId: number): Promise<Message[]> {
+    try {
+      const res = await axios.get<Message[]>(
+        `${API_URL}/${chatId}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      return res.data;
+    } catch (error) {
+      console.error("Greška pri dohvatanju poruka:", error);
+      return [];
+    }
+  },
+
+  async deleteMessagesByChatId(chatId: number): Promise<boolean> {
+    try {
+      const res = await axios.delete<{ success: boolean }>(
+        `${API_URL}/${chatId}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      return res.data.success;
+    } catch (error) {
+      console.error("Greška pri brisanju poruka:", error);
+      return false;
+    }
+  },
+};
