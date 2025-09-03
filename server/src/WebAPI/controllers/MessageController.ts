@@ -22,8 +22,11 @@ export class MessageController {
   private async createMessage(req: Request, res: Response): Promise<void> {
     try {
       const { text, isSentByAI, sentTime, chatId } = req.body;
+      const id = req.user?.id ?? 0;
+
       const message = await this.messageService.create(
-        new MessageDto(0, text, isSentByAI, sentTime, chatId)
+        new MessageDto(0, text, isSentByAI, sentTime, chatId),
+        id
       );
       res.status(201).json(message);
     } catch (error) {

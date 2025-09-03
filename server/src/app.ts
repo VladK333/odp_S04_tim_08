@@ -35,7 +35,7 @@ const messageRepository: IMessageRepository = new MessageRepository();
 const authService: IAuthService = new AuthService(userRepository);
 const userService: IUserService = new UserService(userRepository);
 const chatService: IChatService = new ChatService(chatRepository)
-const messageService: IMessageService = new MessageService(messageRepository);
+const messageService: IMessageService = new MessageService(messageRepository, userService);
 
 // WebAPI routes
 const authController = new AuthController(authService);

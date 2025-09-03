@@ -1,12 +1,17 @@
+import { MESSAGE_LIMIT } from "../../Domain/constants/message";
 import { MessageDto } from "../../Domain/DTOs/messages/MessageDto";
 import { Message } from "../../Domain/models/Message";
 import { IMessageRepository } from "../../Domain/repositories/messages/IMessageRepository";
 import { IMessageService } from "../../Domain/services/messages/IMessageService";
+import { IUserService } from "../../Domain/services/users/IUserService";
 
 export class MessageService implements IMessageService {
-  public constructor(private messageRepository: IMessageRepository) {}
+  public constructor(
+    private messageRepository: IMessageRepository,
+    private userService: IUserService
+  ) {}
 
-  async create(messageDto: MessageDto): Promise<MessageDto> {
+  async create(messageDto: MessageDto, userId: number): Promise<MessageDto> {
     const message = new Message(
       0,
       messageDto.text,
@@ -15,8 +20,23 @@ export class MessageService implements IMessageService {
       messageDto.chatId
     );
 
-    // proveru korisnika jel premium ako nije, onda proveri limit i azuriraj timestamp 
-    // po potrebi...
+    const user = await this.userService.getById(userId);
+
+    if (user.id === 0)
+      return new MessageDto();
+
+    if(user.isPremium === false) {
+      const currentTime: number = Date.now() / 1000; // unix timestamp in seconds
+      const is24hLimitPassed: boolean = Math.abs(user.firstMessageSentForPeriod - currentTime) >= (24 * 60 * 60); // ???
+
+      if(user.messagesLeft - 1 < 0 || !is24hLimitPassed)
+        return new MessageDto();
+
+      if(is24hLimitPassed) {
+        user.messagesLeft = MESSAGE_LIMIT;
+        user.firstMessageSentForPeriod = currentTime;
+      }
+    }
 
     const created = await this.messageRepository.create(message);
     return new MessageDto(

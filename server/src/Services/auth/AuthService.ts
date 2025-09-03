@@ -1,3 +1,4 @@
+import { MESSAGE_LIMIT } from "../../Domain/constants/message";
 import { UserDto } from "../../Domain/DTOs/users/UserDto";
 import { User } from "../../Domain/models/User";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
@@ -37,7 +38,7 @@ export class AuthService implements IAuthService {
     const hashedPassword = await bcrypt.hash(password, this.saltRounds);
 
     const newUser = await this.userRepository.create(
-      new User(0, fullname, email, hashedPassword, isPremium, 50, Date.now())
+      new User(0, fullname, email, hashedPassword, isPremium, MESSAGE_LIMIT, Date.now())
     );
 
     if (newUser.id !== 0) {
