@@ -1,23 +1,31 @@
 import React, { useState } from 'react';
-import type { User } from '../../types/User';
-import { validateLoginForm } from '../../validators/auth/login/LogInValidation';
-import type ILogin from '../../interfaces/auth/login/ILogin';
 import './LoginForm.css';
+import type { IAuthAPIService } from '../../../api/auth/IAuthAPIService';
+import { useAuth } from '../../../hooks/auth/useAuthHook';
+import type ILogin from '../../../interfaces/auth/login/ILogin';
+import { validateLoginForm } from '../../../validators/auth/login/LogInValidation';
 
 interface LoginFormProps {
+  authService: IAuthAPIService;   // injected via props
   onClose: () => void;
   onRegisterClick: () => void;
   onContinueAsGuest: () => void;
-  onLoginSuccess: (user: User) => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onContinueAsGuest, onLoginSuccess }) => {
+const LoginForm: React.FC<LoginFormProps> = ({
+  authService,
+  onClose,
+  onRegisterClick,
+  onContinueAsGuest
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const loginValues: ILogin = { email, password };
     const validationErrors = validateLoginForm(loginValues);
 
@@ -27,22 +35,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onClose, onRegisterClick, onConti
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+      const response = await authService.prijava(email, password);
 
-      const data = await response.json();
+      if (response.success && response.data) {
+        // Store credentials in auth context
+        login(response.data);
 
-      if (response.ok) {
-        onLoginSuccess(data.user);
+       
+        
+
         onClose();
       } else {
-        setError(data.message);
+        setError(response.message);
       }
-    } catch {
-      setError('Greska servera');
+    } catch (err) {
+      setError('Greška servera');
     }
   };
 

@@ -4,7 +4,7 @@ import axios from "axios";
 
 const API_URL: string = import.meta.env.VITE_API_URL + "auth";
 
-export const authApi: IAuthAPIService = {
+export class AuthAPIService implements IAuthAPIService {
   async prijava(email: string, password: string): Promise<AuthResponse> {
     try {
       const res = await axios.post<AuthResponse>(`${API_URL}/login`, {
@@ -23,7 +23,7 @@ export const authApi: IAuthAPIService = {
         data: undefined,
       };
     }
-  },
+  }
 
   async registracija(
     fullname: string,
@@ -50,5 +50,5 @@ export const authApi: IAuthAPIService = {
         data: undefined,
       };
     }
-  },
+  }
 };

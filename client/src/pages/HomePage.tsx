@@ -1,11 +1,11 @@
 import  { useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
-import LoginForm from '../forms/logInForm/LogInForm';
-import SignInForm from '../forms/signInForm/SignInForm';
+import LoginForm from '../components/auth/logInForm/LogInForm';
 import Navbar from '../components/navbar/Navbar';
 import Chat from "../components/chat/Chat";
 import type { User } from '../types/User';
 import './HomePage.css'; // Import CSS fajla
+import type { IAuthAPIService } from '../api/auth/IAuthAPIService';
 
 const guestUser: User = {
   firstName: 'Guest',
@@ -19,7 +19,15 @@ const guestUser: User = {
   messagesLeft: 50,
 };
 
-function HomePage() {
+interface HomePageProps {
+  authService: IAuthAPIService;   // injected via props
+  
+}
+
+
+const HomePage: React.FC<HomePageProps> = ({
+  authService
+}) => {
   const [showLogin, setShowLogin] = useState(true);
   const [showSignInForm, setShowSignInForm] = useState(false);
   const [showSidebar] = useState(true);
@@ -33,6 +41,11 @@ function HomePage() {
     setShowLogin(false);
     setShowSignInForm(false);
   };
+
+  const onClose = () =>
+  {
+    setShowLogin(false);
+  }
 
   const openSignInForm = () => {
     setShowLogin(false);
@@ -92,15 +105,16 @@ function HomePage() {
       {showLogin && (
         <div className="form-wrapper">
           <LoginForm
-            onClose={() => setShowLogin(false)}
+          authService={authService}
+            onClose={onClose}
             onRegisterClick={openSignInForm}
             onContinueAsGuest={continueAsGuest}
-            onLoginSuccess={handleLoginSuccess}
+            
           />
         </div>
       )}
 
-      {showSignInForm && (
+      {/* {showSignInForm && (
         <div className="form-wrapper">
           <SignInForm
             onClose={() => setShowSignInForm(false)}
@@ -108,7 +122,7 @@ function HomePage() {
             onRegisterComplete={handleRegisterComplete}
           />
         </div>
-      )}
+      )} */}
     </>
   );
 }

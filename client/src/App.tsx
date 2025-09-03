@@ -1,11 +1,20 @@
-//import React from 'react';
-import HomePage from '../src/pages/HomePage';
-//import NotFoundPage from '../src/pages/Page404';
+import { Routes, Route } from "react-router-dom";
+import { AuthAPIService } from "./api/auth/AuthAPIService";
+import type { IAuthAPIService } from "./api/auth/IAuthAPIService";
+import HomePage from "./pages/HomePage";
 
+const authService: IAuthAPIService = new AuthAPIService();
 
 function App() {
-  return <HomePage />;
-  //return <NotFoundPage />;
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage authService ={authService} />} />
+      {/* <Route path="/register" element={<RegistracijaStranica authApi={authApi} />} /> */}
+
+        
+
+    </Routes>
+  );
 }
 
 export default App;

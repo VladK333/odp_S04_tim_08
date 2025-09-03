@@ -3,7 +3,7 @@ import './Sidebar.css';
 import UserInfo from './UserInfo';
 import DetailsButton from '../buttons/DetailsButton';
 import DetailsForm from '../../forms/detailsForm/DetailsForm';
-import LoginForm from '../../forms/logInForm/LogInForm';
+import LoginForm from '../auth/logInForm/LogInForm';
 import SignInForm from '../../forms/signInForm/SignInForm';
 import ToggleButton from '../buttons/ToggleButton';
 
