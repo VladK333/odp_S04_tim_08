@@ -24,7 +24,7 @@ export interface IUserRepository {
    * @param korisnickoIme - Korisničko ime za pretragu
    * @returns Promise koji vraća korisnika ili prazan objekat ako nije pronađen
    */
-  getByEmail(email: string): Promise<User>;
+  getByUsername(korisnickoIme: string): Promise<User>;
 
   /**
    * Vraća sve korisnike iz baze podataka

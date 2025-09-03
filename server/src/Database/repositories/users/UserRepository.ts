@@ -7,28 +7,20 @@ export class UserRepository implements IUserRepository {
   async create(user: User): Promise<User> {
     try {
       const query = `
-        INSERT INTO users (email, lozinka, uloga, ime, prezime, datumR, telefon, imgSrc, preostaloPoruka, prvaPorukaVreme) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (korisnickoIme, uloga, lozinka) 
+        VALUES (?, ?, ?)
       `;
 
       const [result] = await db.execute<ResultSetHeader>(query, [
-        user.email,
-        user.password,
-        user.role,
-        user.firstName,
-        user.lastName,
-        user.dateOfBirth,
-        user.phoneNumber,
-        user.imgSrc,
-        user.messagesLeft,
-        user.firstMessageTime
+        user.korisnickoIme,
+        user.uloga,
+        user.lozinka,
       ]);
 
 
       if (result.insertId) {
         // Vraćamo novog korisnika sa dodeljenim ID-om
-        return new User(result.insertId, user.email, user.password, user.role, user.firstName, user.lastName, user.dateOfBirth, user.phoneNumber,
-                          user.imgSrc, user.messagesLeft, user.firstMessageTime);
+        return new User(result.insertId, user.korisnickoIme, user.uloga, user.lozinka);
       }
 
       // Vraćamo prazan objekat ako kreiranje nije uspešno
@@ -46,8 +38,7 @@ export class UserRepository implements IUserRepository {
 
       if (rows.length > 0) {
         const row = rows[0];
-        return new User(row.id, row.email, row.lozinka, row.uloga, row.ime, row.prezime, row.datumR, row.telefon, row.imgSrc,
-           row.preostaloPoruka, row.prvaPorukaVreme);
+        return new User(row.id, row.korisnickoIme, row.uloga, row.lozinka);
       }
 
       return new User();
@@ -56,25 +47,24 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async getByEmail(email: string): Promise<User> {
+  async getByUsername(korisnickoIme: string): Promise<User> {
     try {
       const query = `
-        SELECT *
+        SELECT id, korisnickoIme, uloga, lozinka
         FROM users 
-        WHERE email = ?
+        WHERE korisnickoIme = ?
       `;
 
-      const [rows] = await db.execute<RowDataPacket[]>(query, [email]);
+      const [rows] = await db.execute<RowDataPacket[]>(query, [korisnickoIme]);
 
       if (rows.length > 0) {
         const row = rows[0];
-        return new User(row.id, row.email, row.lozinka, row.uloga, row.ime, row.prezime, row.datumR, row.telefon, row.imgSrc,
-                        row.preostaloPoruka, row.prvaPorukaVreme);
+        return new User(row.id, row.korisnickoIme, row.uloga, row.lozinka);
       }
 
       return new User();
     } catch (error) {
-      console.log("user get by email: " + error);
+      console.log("user get by username: " + error);
       return new User();
     }
   }
@@ -85,8 +75,7 @@ export class UserRepository implements IUserRepository {
       const [rows] = await db.execute<RowDataPacket[]>(query);
 
       return rows.map(
-        (row) => new User(row.id, row.email, row.lozinka, row.uloga, row.ime, row.prezime, row.datumR, row.telefon, row.imgSrc, 
-                        row.preostaloPoruka, row.prvaPorukaVreme)
+        (row) => new User(row.id, row.korisnickoIme, row.uloga, row.lozinka)
       );
     } catch {
       return [];
@@ -97,23 +86,15 @@ export class UserRepository implements IUserRepository {
     try {
       const query = `
         UPDATE users 
-        SET email = ?, lozinka = ?, uloga = ?, ime = ?, prezime = ?, datumR = ?, 
-            telefon = ?, imgSrc = ?, preostaloPoruka = ?, prvaPorukaVreme = ?
+        SET korisnickoIme = ?, lozinka = ? 
         WHERE id = ?
       `;
 
       const [result] = await db.execute<ResultSetHeader>(query, [
-        user.email,
-        user.password,
-        user.role,
-        user.firstName,
-        user.lastName,
-        user.dateOfBirth,
-        user.phoneNumber,
-        user.imgSrc,
-        user.messagesLeft,
-        user.firstMessageTime,
-        user.id
+        user.korisnickoIme,
+        user.lozinka,
+        user.uloga,
+        user.id,
       ]);
 
       if (result.affectedRows > 0) {

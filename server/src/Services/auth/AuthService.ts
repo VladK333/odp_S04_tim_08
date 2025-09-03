@@ -1,5 +1,4 @@
 import { UserAuthDataDto } from "../../Domain/DTOs/auth/UserAuthDataDto";
-import { UserRole } from "../../Domain/enums/UserRole";
 import { User } from "../../Domain/models/User";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IAuthService } from "../../Domain/services/auth/IAuthService";
@@ -10,19 +9,18 @@ export class AuthService implements IAuthService {
 
   public constructor(private userRepository: IUserRepository) {}
 
-  async prijava(email: string, lozinka: string): Promise<UserAuthDataDto> {
-    const user = await this.userRepository.getByEmail(email);
+  async prijava(korisnickoIme: string, lozinka: string): Promise<UserAuthDataDto> {
+    const user = await this.userRepository.getByUsername(korisnickoIme);
 
-    if (user.id !== 0 && await bcrypt.compare(lozinka, user.password)) {
-      return new UserAuthDataDto(user.id, user.email, user.role);
+    if (user.id !== 0 && await bcrypt.compare(lozinka, user.lozinka)) {
+      return new UserAuthDataDto(user.id, user.korisnickoIme, user.uloga);
     }
 
     return new UserAuthDataDto(); // Neispravno korisničko ime ili lozinka
   }
 
-  async registracija(email: string, lozinka: string,  uloga: UserRole, ime : string, prezime : string, datumR : string, telefon : string,
-                imgSrc: string, preostaloPoruka : number, prvaPorukaVreme : Date): Promise<UserAuthDataDto> {
-    const existingUser = await this.userRepository.getByEmail(email);
+  async registracija(korisnickoIme: string, uloga: string, lozinka: string): Promise<UserAuthDataDto> {
+    const existingUser = await this.userRepository.getByUsername(korisnickoIme);
     
     if (existingUser.id !== 0) {
       return new UserAuthDataDto(); // Korisnik već postoji
@@ -32,11 +30,11 @@ export class AuthService implements IAuthService {
     const hashedPassword = await bcrypt.hash(lozinka, this.saltRounds);
 
     const newUser = await this.userRepository.create(
-      new User(0, email, hashedPassword, uloga, ime, prezime, datumR, telefon, imgSrc, preostaloPoruka, prvaPorukaVreme)
+      new User(0, korisnickoIme, uloga, hashedPassword)
     );
 
     if (newUser.id !== 0) {
-      return new UserAuthDataDto(newUser.id, newUser.email, newUser.role);
+      return new UserAuthDataDto(newUser.id, newUser.korisnickoIme, newUser.uloga);
     }
 
     return new UserAuthDataDto(); // Registracija nije uspela
