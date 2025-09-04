@@ -1,14 +1,14 @@
 .dropdown {
   position: absolute;
-  top: 59px;
-  left: -533px;
+  top: 58px;
+  left: -530px;
   background-color: #222;
   border: 1px solid #cd55abff;
   border-radius: 6px;
   padding: 15px 20px;
   color: white;
   z-index: 1000;
-  height: 527px;
+  height: 513px;
   width: 1147px;
 }
 

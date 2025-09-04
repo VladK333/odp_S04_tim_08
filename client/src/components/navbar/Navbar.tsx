@@ -2,15 +2,17 @@ import React from 'react';
 import NewChatButton from '../buttons/NewChatButton';
 import HistoryButton from '../buttons/HistoryButton';
 import './Navbar.css';
+import DeleteChatButton from '../buttons/DeleteChatButton';
 
 interface NavbarProps {
   onNewChatClick: () => void;
   formsOpen?: boolean;
   isGuest: boolean;
   onHistoryClick?: () => void; // <-- dodaj ovo
+  onDeleteChatClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, formsOpen, isGuest }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, formsOpen, isGuest, onDeleteChatClick }) => {
   return (
     <nav className="navbar">
       <div className="leftSection">
@@ -25,6 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ onNewChatClick, formsOpen, isGuest }) =
 
       <div className="rightSection">
         {!formsOpen && !isGuest && <HistoryButton className="historyButton" />}
+        {onDeleteChatClick && (
+              <DeleteChatButton onDelete={onDeleteChatClick} />
+        )}
       </div>
     </nav>
   );

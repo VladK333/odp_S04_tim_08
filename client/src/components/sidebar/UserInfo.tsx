@@ -2,38 +2,33 @@ import React from 'react';
 import './UserInfo.css';
 
 interface UserInfoProps {
-  firstName: string;
-  lastName: string;
-  type: 'guest' | 'regular' | 'premium';
-  imgSrc: string;
+  fullname: string;
+  isPremium: boolean;
   messagesLeft: number;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
-  firstName,
-  lastName,
-  type,
-  imgSrc,
+  fullname,
+  isPremium,
   messagesLeft,
 }) => {
-  const labelColor = type === 'premium' ? '#FFD700' : '#007BFF';
+  //const type = isPremium ? 'premium' : 'regular';
+  //const labelColor = isPremium ? '#FFD700' : '#007BFF';
 
   return (
     <div className="profileContainer">
       <img
-        src={imgSrc}
-        alt={`${firstName} ${lastName}`}
+        src={'/public/images/user.png'}
+        alt={fullname}
         className="profileImage"
       />
-      <h2 className="name">
-        {firstName} {lastName}
-      </h2>
+      <h2 className="name">{fullname}</h2>
       <div className="messagesLeftLabel">
-         <strong>No. messages left:</strong> {type === 'premium' ? '∞' : messagesLeft}
+        <strong>No. messages left:</strong> {isPremium ? '∞' : messagesLeft}
       </div>
-      <span className="userTypeLabel" style={{ backgroundColor: labelColor }}>
+      {/* <span className="userTypeLabel" style={{ backgroundColor: labelColor }}> 
         {type.toUpperCase()}
-      </span>
+      </span>*/}
     </div>
   );
 };

@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
 import './Sidebar.css';
 import UserInfo from './UserInfo';
-import DetailsButton from '../buttons/DetailsButton';
-import DetailsForm from '../../forms/detailsForm/DetailsForm';
-import LoginForm from '../auth/logInForm/LogInForm';
+//import DetailsButton from '../buttons/DetailsButton';
+//import DetailsForm from '../../forms/detailsForm/DetailsForm';
 import ToggleButton from '../buttons/ToggleButton';
 
 interface User {
-  firstName: string;
-  lastName: string;
+  fullname: string;
   email: string;
-  password: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  type: 'guest' | 'regular' | 'premium';
-  imgSrc: string;
+  isPremium: boolean;
   messagesLeft: number;
 }
 
@@ -25,20 +19,15 @@ interface SidebarProps {
 }
 
 const guestUser: User = {
-  firstName: 'Guest',
-  lastName: '',
+  fullname: 'Guest',
   email: '',
-  password: '',
-  dateOfBirth: '',
-  phoneNumber: '',
-  type: 'guest',
-  imgSrc: '/images/user.png',
-  messagesLeft: 0,
+  isPremium: false,
+  messagesLeft: 20,
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  //const [showDetails, setShowDetails] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showSignInForm, setShowSignInForm] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -46,8 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const handleAuthClick = () => location.reload();
-  const handleDetailsClick = () => setShowDetails(true);
-  const handleCloseDetails = () => setShowDetails(false);
+  //const handleDetailsClick = () => setShowDetails(true);
+  //const handleCloseDetails = () => setShowDetails(false);
 
   const handleLoginClose = () => setShowLoginForm(false);
   const handleRegisterClick = () => {
@@ -59,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
   const showOverlay = showLoginForm || showSignInForm;
   const userToShow = user || guestUser;
-  const isGuest = userToShow.type === 'guest';
+ const isGuest = userToShow.fullname === 'Guest';
 
   return (
     <>
@@ -78,14 +67,12 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         <div className="userInfoWrapper">
           <div style={{ opacity: isOpen ? 1 : 0, transition: 'opacity 0.3s ease', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <UserInfo
-              firstName={userToShow.firstName}
-              lastName={userToShow.lastName}
-              type={userToShow.type}
-              imgSrc={userToShow.imgSrc}
+              fullname={userToShow.fullname}
+              isPremium={userToShow.isPremium}
               messagesLeft={userToShow.messagesLeft}
             />
 
-            {!isGuest && <DetailsButton onClick={handleDetailsClick} />}
+            {/* {!isGuest && <DetailsButton onClick={handleDetailsClick} />} */}
           </div>
         </div>
 
@@ -94,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
       {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
 
-      {showDetails && <DetailsForm user={userToShow} onClose={handleCloseDetails} />}
+      {/* {showDetails && <DetailsForm user={userToShow} onClose={handleCloseDetails} />} */}
 
       {showOverlay && (
         <div
