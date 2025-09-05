@@ -5,6 +5,7 @@ import ToggleButton from '../buttons/ToggleButton';
 import { useAuth } from '../../hooks/auth/useAuthHook';
 import { AuthAPIService } from '../../api/auth/AuthAPIService';
 import LoginForm from '../auth/logInForm/LogInForm';
+import RegisterForm from '../auth/registerForm/RegisterForm';
 
 const authService = new AuthAPIService();
 
@@ -25,25 +26,25 @@ const guestUser: User = {
 const Sidebar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
-  // Klik na Log In / Log Out dugme
   const handleAuthClick = () => {
     if (isAuthenticated) {
       logout();
     } else {
-      setShowLoginForm(true);
+      setAuthMode('login');
+      setShowAuthForm(true);
     }
   };
 
-  const handleLoginClose = () => setShowLoginForm(false);
+  const handleAuthClose = () => setShowAuthForm(false);
 
-  // Map AuthUser na tip koji UserInfo očekuje
   const mappedUser: User = user
     ? {
-        fullname: user.email, // ako želiš fullname, možeš ga ovde dodati
+        fullname: user.email, // možeš dodati fullname iz user objekta
         email: user.email,
         isPremium: user.isPremium,
         messagesLeft: user.isPremium ? Infinity : 50,
@@ -51,91 +52,98 @@ const Sidebar: React.FC = () => {
     : guestUser;
 
   const isGuest = mappedUser.fullname === 'Guest';
-  const showOverlay = showLoginForm;
 
-return (
-  <>
-    {/* Sidebar */}
-    <aside
-      className="sidebar"
-      style={{ width: isOpen ? 300 : 0, overflowX: 'hidden', zIndex: 1000 }}
-    >
-      <div className="topBar">
-        <button
-          onClick={handleAuthClick}
-          className="authButton"
-          aria-label={!isGuest ? 'Log out' : 'Log in'}
-          type="button"
-        >
-          {!isGuest ? 'Log Out' : 'Log In'}
-        </button>
-      </div>
-
-      <div className="userInfoWrapper">
-        <div
-          style={{
-            opacity: isOpen ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <UserInfo
-            fullname={mappedUser.fullname}
-            isPremium={mappedUser.isPremium}
-            messagesLeft={mappedUser.messagesLeft}
-          />
+  return (
+    <>
+      {/* Sidebar */}
+      <aside
+        className="sidebar"
+        style={{ width: isOpen ? 300 : 0, overflowX: 'hidden', zIndex: 1000 }}
+      >
+        <div className="topBar">
+          <button
+            onClick={handleAuthClick}
+            className="authButton"
+            aria-label={!isGuest ? 'Log out' : 'Log in'}
+            type="button"
+          >
+            {!isGuest ? 'Log Out' : 'Log In'}
+          </button>
         </div>
-      </div>
 
-      {isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
-    </aside>
+        <div className="userInfoWrapper">
+          <div
+            style={{
+              opacity: isOpen ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <UserInfo
+              fullname={mappedUser.fullname}
+              isPremium={mappedUser.isPremium}
+              messagesLeft={mappedUser.messagesLeft}
+            />
+          </div>
+        </div>
 
-    {/* Toggle kada je sidebar zatvoren */}
-    {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
+        {isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
+      </aside>
 
-    {/* Login forma i overlay (renderovati izvan sidebar-a) */}
-    {showLoginForm && (
-  <>
-    <div
-      className="overlay"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)', // zamagljuje sve
-        zIndex: 3000, // veći od navbar i sidebar
-      }}
-      onClick={handleLoginClose}
-    />
-    <div
-      className="loginWrapper"
-      style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 3100, // iznad overlay-a
-        width: '100%',
-        maxWidth: '400px',
-      }}
-    >
-      <LoginForm
-        authService={authService}
-        onClose={handleLoginClose}
-        onRegisterClick={() => {}}
-        onContinueAsGuest={() => setShowLoginForm(false)}
-      />
-    </div>
-  </>
-)}
+      {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
 
-
-  </>
-);
-
-
+      {/* Overlay i Auth forme */}
+      {showAuthForm && (
+        <>
+          <div
+            className="overlay"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              zIndex: 3000,
+            }}
+            onClick={handleAuthClose}
+          />
+          <div
+            className="loginWrapper"
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 3100,
+              width: '100%',
+              maxWidth: '400px',
+            }}
+          >
+            {authMode === 'login' ? (
+              <LoginForm
+                authService={authService}
+                onClose={handleAuthClose}
+                onRegisterClick={() => setAuthMode('register')}
+                onContinueAsGuest={() => setShowAuthForm(false)}
+              />
+            ) : (
+              <RegisterForm
+                authService={authService}
+                onClose={handleAuthClose}
+                onLoginClick={() => setAuthMode('login')}
+                onRegisterComplete={(user) => {
+                  // Opcionalno: automatski zatvori formu nakon registracije
+                  setShowAuthForm(false);
+                }}
+                onContinueAsGuest={() => setShowAuthForm(false)}  //
+              />
+            )}
+          </div>
+        </>
+      )}
+    </>
+  );
 };
 
 export default Sidebar;

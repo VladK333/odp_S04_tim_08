@@ -8,6 +8,7 @@ interface RegisterFormProps {
   onClose: () => void;
   onLoginClick: () => void;
   onContinueAsGuest: () => void;
+  onRegisterComplete?: (user: any) => void; // ← dodaj ovo
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
