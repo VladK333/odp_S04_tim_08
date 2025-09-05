@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// Sidebar.tsx
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 import UserInfo from './UserInfo';
 import ToggleButton from '../buttons/ToggleButton';
@@ -10,11 +11,13 @@ import type { User } from '../../types/User';
 
 const authService = new AuthAPIService();
 
+const DEFAULT_LIMIT = 50;
+
 const guestUser: User = {
   fullname: 'Guest',
   email: '',
   isPremium: false,
-  messagesLeft: 50,
+  messagesLeft: DEFAULT_LIMIT,
 };
 
 interface SidebarProps {
@@ -24,8 +27,8 @@ interface SidebarProps {
   onGuestChange?: (isGuest: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
-  const { user, logout, isAuthenticated } = useAuth();
+const Sidebar: React.FC<SidebarProps> = ({ user, setUser, onGuestChange }) => {
+  const { user: authUser, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
@@ -44,17 +47,30 @@ const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
 
   const handleAuthClose = () => setShowAuthForm(false);
 
-  // Ako je user ulogovan -> koristi njega, inače guest
-  const mappedUser: User = user
-    ? {
-        fullname: user.email,
-        email: user.email,
-        isPremium: user.isPremium,
-        messagesLeft: user.isPremium ? Infinity : user.messagesLeft,
+  // Reset poruka kad se loguje regular user
+  useEffect(() => {
+    if (authUser) {
+      if (authUser.isPremium) {
+        setUser({
+          fullname: authUser.email,
+          email: authUser.email,
+          isPremium: true,
+          messagesLeft: Infinity,
+        });
+      } else {
+        setUser({
+          fullname: authUser.email,
+          email: authUser.email,
+          isPremium: false,
+          messagesLeft: DEFAULT_LIMIT, // reset na login
+        });
       }
-    : guestUser;
+    } else {
+      setUser(guestUser); // ako nije ulogovan, guest mode
+    }
+  }, [authUser, setUser]);
 
-  const isGuest = mappedUser.fullname === 'Guest';
+  const isGuest = !authUser;
 
   return (
     <>
@@ -84,11 +100,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
               alignItems: 'center',
             }}
           >
-            <UserInfo
-              fullname={mappedUser.fullname}
-              isPremium={mappedUser.isPremium}
-              messagesLeft={mappedUser.isPremium ? Infinity : mappedUser.messagesLeft}
-            />
+            {user && (
+              <UserInfo
+                fullname={user.fullname}
+                isPremium={user.isPremium}
+                messagesLeft={user.messagesLeft}
+              />
+            )}
           </div>
         </div>
 

@@ -107,6 +107,15 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
         />
         <button className="btn" onClick={handleSend} disabled={loading}>Send</button>
       </div>
+
+      {/* Ovde ispisujemo broj poruka
+      {user && (
+        <div className="messagesLeft">
+          {user.isPremium 
+            ? "You have unlimited messages."
+            : `Messages left today: ${user.messagesLeft}`}
+        </div>
+      )} */}
     </div>
   );
 }

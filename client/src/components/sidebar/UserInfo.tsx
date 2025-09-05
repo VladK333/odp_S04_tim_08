@@ -4,7 +4,7 @@ import './UserInfo.css';
 interface UserInfoProps {
   fullname: string;
   isPremium: boolean;
-  messagesLeft: number | string;
+  messagesLeft: number | typeof Infinity;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
@@ -20,8 +20,15 @@ const UserInfo: React.FC<UserInfoProps> = ({
         className="profileImage"
       />
       <h2 className="name">{fullname}</h2>
+
       <div className="messagesLeftLabel">
-        <strong>No. messages left:</strong> {isPremium ? '∞' : messagesLeft}
+        {isPremium ? (
+          <strong>Messages left: ∞ (unlimited)</strong>
+        ) : (
+          <>
+            <strong>Messages left:</strong> {messagesLeft}
+          </>
+        )}
       </div>
     </div>
   );
