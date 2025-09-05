@@ -6,15 +6,9 @@ import { useAuth } from '../../hooks/auth/useAuthHook';
 import { AuthAPIService } from '../../api/auth/AuthAPIService';
 import LoginForm from '../auth/logInForm/LogInForm';
 import RegisterForm from '../auth/registerForm/RegisterForm';
+import type { User } from '../../types/User';
 
 const authService = new AuthAPIService();
-
-interface User {
-  fullname: string;
-  email: string;
-  isPremium: boolean;
-  messagesLeft: number;
-}
 
 const guestUser: User = {
   fullname: 'Guest',
@@ -24,7 +18,10 @@ const guestUser: User = {
 };
 
 interface SidebarProps {
-  onGuestChange?: (isGuest: boolean) => void; // callback za Navbar
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isOpen: boolean;
+  onGuestChange?: (isGuest: boolean) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
@@ -38,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
   const handleAuthClick = () => {
     if (isAuthenticated) {
       logout();
-      if (onGuestChange) onGuestChange(true); // postaje guest
+      if (onGuestChange) onGuestChange(true);
     } else {
       setAuthMode('login');
       setShowAuthForm(true);
@@ -47,12 +44,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
 
   const handleAuthClose = () => setShowAuthForm(false);
 
+  // Ako je user ulogovan -> koristi njega, inače guest
   const mappedUser: User = user
     ? {
         fullname: user.email,
         email: user.email,
         isPremium: user.isPremium,
-        messagesLeft: user.isPremium ? Infinity : 50,
+        messagesLeft: user.isPremium ? Infinity : user.messagesLeft,
       }
     : guestUser;
 
@@ -89,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
             <UserInfo
               fullname={mappedUser.fullname}
               isPremium={mappedUser.isPremium}
-              messagesLeft={mappedUser.messagesLeft}
+              messagesLeft={mappedUser.isPremium ? Infinity : mappedUser.messagesLeft}
             />
           </div>
         </div>

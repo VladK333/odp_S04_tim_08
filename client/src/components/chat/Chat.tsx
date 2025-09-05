@@ -40,33 +40,43 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
   }, [messages, loading]);
 
   const handleSend = async () => {
-    if (!user) return;
-
     const text = input.trim();
     if (!text || loading) return;
+    if (!user) return;
 
-    // Provera broja poruka
-    if (user.messagesLeft <= 0) {
+    // Provera limita
+    if (!user.isPremium && user.messagesLeft <= 0) {
       setMessages(prev => [
         ...prev,
-        { role: "assistant", content: "You have reached your daily limit of messages." }
+        { role: "assistant" as const, content: "You have reached your daily limit of messages." }
       ]);
       return;
     }
 
-    // Smanji broj poruka
-    setUser(prev => prev ? { ...prev, messagesLeft: prev.messagesLeft - 1 } : prev);
+    // Ažuriraj broj poruka i vreme
+    setUser(prev =>
+      prev
+        ? {
+            ...prev,
+            messagesLeft: prev.isPremium ? Infinity : prev.messagesLeft - 1,
+            lastMessageTime: new Date(),
+          }
+        : prev
+    );
 
-    const next = [...messages, { role: "user", content: text }];
+    const next: ChatMessage[] = [...messages, { role: "user" as const, content: text }];
     setMessages(next);
     setInput("");
     setLoading(true);
 
     try {
       const reply = await sendChatCompletion(next);
-      setMessages([...next, { role: "assistant", content: reply }]);
+      setMessages([...next, { role: "assistant" as const, content: reply }]);
     } catch {
-      setMessages([...next, { role: "assistant", content: "⚠️ Greška: ne mogu da se povežem na LM Studio." }]);
+      setMessages([
+        ...next,
+        { role: "assistant" as const, content: "⚠️ Greška: ne mogu da se povežem na LM Studio." }
+      ]);
     } finally {
       setLoading(false);
     }

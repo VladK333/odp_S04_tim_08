@@ -12,9 +12,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
   isPremium,
   messagesLeft,
 }) => {
-  //const type = isPremium ? 'premium' : 'regular';
-  //const labelColor = isPremium ? '#FFD700' : '#007BFF';
-
   return (
     <div className="profileContainer">
       <img

@@ -10,14 +10,9 @@ import './HomePage.css'; // Import CSS fajla
 import type { IAuthAPIService } from '../api/auth/IAuthAPIService';
 
 const guestUser: User = {
-  firstName: 'Guest',
-  lastName: '',
+  fullname: 'Guest',
   email: '',
-  password: '',
-  dateOfBirth: '',
-  phoneNumber: '',
-  type: 'guest',
-  imgSrc: '/images/user.png',
+  isPremium: false,
   messagesLeft: 50,
 };
 
@@ -89,7 +84,7 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
         onNewChatClick={handleNewChat}
         onHistoryClick={handleHistoryClick}
         formsOpen={formsOpen}
-        isGuest={isGuest}
+        // isGuest={isGuest}
       />
 
       <Sidebar
@@ -115,7 +110,7 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
             onClose={() => setShowLogin(false)}
             onRegisterClick={openRegisterForm}
             onContinueAsGuest={continueAsGuest}
-            onLoginSuccess={handleLoginSuccess}
+            // onLoginSuccess={handleLoginSuccess}
           />
         </div>
       )}
@@ -127,7 +122,7 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
             onClose={() => setShowRegisterForm(false)}
             onLoginClick={backToLogin}
             onContinueAsGuest={continueAsGuest}
-            onRegisterSuccess={handleLoginSuccess}
+            // onRegisterSuccess={handleLoginSuccess}
           />
         </div>
       )}
