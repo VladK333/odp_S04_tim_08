@@ -1,3 +1,4 @@
+// Chat.tsx
 import { useState, useRef, useEffect } from "react";
 import { sendChatCompletion } from "../../api/LMStudio/lmStudioApi";
 import type { ChatMessage } from "../../api/LMStudio/IlmStudioApi";
@@ -39,7 +40,7 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
   }, [messages, loading]);
 
   const handleSend = async () => {
-    if (!user) return; // guest user je već setovan u HomePage
+    if (!user) return;
 
     const text = input.trim();
     if (!text || loading) return;
@@ -56,8 +57,7 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
     // Smanji broj poruka
     setUser(prev => prev ? { ...prev, messagesLeft: prev.messagesLeft - 1 } : prev);
 
-    // Dodaj korisničku poruku
-    const next = [...messages, { role: "user" as const, content: text }];
+    const next = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
     setLoading(true);
@@ -76,7 +76,6 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
     <div className="page" style={{ width: isOpen ? "97%" : "80%" }}>
       <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Chat history */}
       <div className="history" ref={historyRef}>
         {messages
           .filter(m => m.role !== "system")
@@ -84,14 +83,10 @@ export default function Chat({ newChatTrigger, user, setUser }: ChatProps) {
             <div key={i} className={`${m.role === "user" ? "userMsg" : "aiMsg"} message`}>
               <b>{m.role === "user" ? "You" : "AI"}:</b> {m.content}
             </div>
-          ))
-        }
-        {loading && (
-          <div className="aiMsg"><i>AI typing...</i></div>
-        )}
+          ))}
+        {loading && <div className="aiMsg"><i>AI typing...</i></div>}
       </div>
 
-      {/* Input */}
       <div className="row">
         <input
           className="input"

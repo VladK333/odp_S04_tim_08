@@ -1,3 +1,4 @@
+// HomePage.tsx
 import { useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar';
 import LoginForm from '../components/auth/logInForm/LogInForm';
@@ -33,11 +34,9 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
   const [isGuest, setIsGuest] = useState(false);
 
   const clearSession = () => {
-    // brišemo sve tragove pravog logina
     localStorage.removeItem("authToken");
     sessionStorage.removeItem("authToken");
 
-    // brišemo cookie-e
     document.cookie.split(";").forEach(c => {
       document.cookie = c
         .replace(/^ +/, "")
@@ -46,12 +45,12 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
   };
 
   const continueAsGuest = () => {
-    clearSession(); // očisti login state
+    clearSession();
     setIsGuest(true);
-    setCurrentUser({ ...guestUser }); // lokalni guest objekat
+    setCurrentUser({ ...guestUser });
     setShowLogin(false);
     setShowRegisterForm(false);
-    setNewChatCounter(prev => prev + 1); // otvori nov chat odmah
+    setNewChatCounter(prev => prev + 1);
   };
 
   const openRegisterForm = () => {
@@ -78,8 +77,8 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
     setCurrentUser(user);
     setShowLogin(false);
     setShowRegisterForm(false);
-    setIsGuest(false); // resetujemo guest mod
-    setNewChatCounter(prev => prev + 1); // novi chat za pravog usera
+    setIsGuest(false);
+    setNewChatCounter(prev => prev + 1);
   };
 
   const formsOpen = showLogin || showRegisterForm;
@@ -104,7 +103,6 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
           newChatTrigger={newChatCounter} 
           user={currentUser} 
           setUser={setCurrentUser} 
-          isGuest={isGuest} 
         />
       </div>
 
