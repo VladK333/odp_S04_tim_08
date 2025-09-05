@@ -26,9 +26,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
       <div className="messagesLeftLabel">
         <strong>No. messages left:</strong> {isPremium ? '∞' : messagesLeft}
       </div>
-      {/* <span className="userTypeLabel" style={{ backgroundColor: labelColor }}> 
-        {type.toUpperCase()}
-      </span>*/}
     </div>
   );
 };
