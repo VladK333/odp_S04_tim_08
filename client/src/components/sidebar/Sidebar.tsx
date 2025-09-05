@@ -132,7 +132,7 @@ const Sidebar: React.FC = () => {
                 authService={authService}
                 onClose={handleAuthClose}
                 onLoginClick={() => setAuthMode('login')}
-                onRegisterComplete={(user) => {
+                onRegisterComplete={() => {
                   // Opcionalno: automatski zatvori formu nakon registracije
                   setShowAuthForm(false);
                 }}
