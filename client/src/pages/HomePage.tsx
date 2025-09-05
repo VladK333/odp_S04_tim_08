@@ -32,11 +32,26 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
   const [newChatCounter, setNewChatCounter] = useState(0);
   const [isGuest, setIsGuest] = useState(false);
 
+  const clearSession = () => {
+    // brišemo sve tragove pravog logina
+    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
+
+    // brišemo cookie-e
+    document.cookie.split(";").forEach(c => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+  };
+
   const continueAsGuest = () => {
+    clearSession(); // očisti login state
     setIsGuest(true);
-    setCurrentUser(guestUser);
+    setCurrentUser({ ...guestUser }); // lokalni guest objekat
     setShowLogin(false);
     setShowRegisterForm(false);
+    setNewChatCounter(prev => prev + 1); // otvori nov chat odmah
   };
 
   const openRegisterForm = () => {
@@ -63,7 +78,8 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
     setCurrentUser(user);
     setShowLogin(false);
     setShowRegisterForm(false);
-    setIsGuest(user.type === 'guest');
+    setIsGuest(false); // resetujemo guest mod
+    setNewChatCounter(prev => prev + 1); // novi chat za pravog usera
   };
 
   const formsOpen = showLogin || showRegisterForm;
@@ -84,7 +100,12 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
       />
 
       <div className={`main-content ${showSidebar ? 'sidebar-open' : 'sidebar-closed'}`}>
-        <Chat newChatTrigger={newChatCounter} user={currentUser} setUser={setCurrentUser} />
+        <Chat 
+          newChatTrigger={newChatCounter} 
+          user={currentUser} 
+          setUser={setCurrentUser} 
+          isGuest={isGuest} 
+        />
       </div>
 
       {formsOpen && <div className="overlay" />}
@@ -96,6 +117,7 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
             onClose={() => setShowLogin(false)}
             onRegisterClick={openRegisterForm}
             onContinueAsGuest={continueAsGuest}
+            onLoginSuccess={handleLoginSuccess}
           />
         </div>
       )}
@@ -107,6 +129,7 @@ const HomePage: React.FC<HomePageProps> = ({ authService }) => {
             onClose={() => setShowRegisterForm(false)}
             onLoginClick={backToLogin}
             onContinueAsGuest={continueAsGuest}
+            onRegisterSuccess={handleLoginSuccess}
           />
         </div>
       )}
