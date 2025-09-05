@@ -1,19 +1,17 @@
 import { Routes, Route } from "react-router-dom";
-import { AuthAPIService } from "./api/auth/AuthAPIService";
-import type { IAuthAPIService } from "./api/auth/IAuthAPIService";
 import HomePage from "./pages/HomePage";
+import { AuthProvider } from "./contexts/auth/AuthContext";
+import { AuthAPIService } from "./api/auth/AuthAPIService";
 
-const authService: IAuthAPIService = new AuthAPIService();
+const authService = new AuthAPIService();
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage authService ={authService} />} />
-      {/* <Route path="/register" element={<RegistracijaStranica authApi={authApi} />} /> */}
-
-        
-
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<HomePage authService={authService} />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 

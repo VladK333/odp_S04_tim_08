@@ -21,11 +21,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login } = useAuth(); // koristi AuthProvider
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validacija polja
     const loginValues: ILogin = { email, password };
     const validationErrors = validateLoginForm(loginValues);
 
@@ -35,20 +36,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     try {
+      // Poziv API servisa
       const response = await authService.prijava(email, password);
 
       if (response.success && response.data) {
-        // Store credentials in auth context
+        // Čuvamo token u AuthProvider-u
         login(response.data);
 
-       
-        
-
+        // Zatvori formu
         onClose();
       } else {
-        setError(response.message);
+        setError(response.message || 'Neuspešan login');
       }
     } catch (err) {
+      console.error(err);
       setError('Greška servera');
     }
   };

@@ -1,14 +1,7 @@
 export interface User {
-  firstName: string;
-  lastName: string;
+  fullname: string;
   email: string;
-  password: string;
-  dateOfBirth: string;
-  phoneNumber: string;
-  type: 'guest' | 'regular' | 'premium';
-  imgSrc: string;
+  isPremium: boolean;
   messagesLeft: number;
-  firstMessageTime?: number;
 }
-
 export const users: User[] = []; // privremeno

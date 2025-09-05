@@ -4,7 +4,7 @@ import './UserInfo.css';
 interface UserInfoProps {
   fullname: string;
   isPremium: boolean;
-  messagesLeft: number;
+  messagesLeft: number | string;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
@@ -18,7 +18,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
   return (
     <div className="profileContainer">
       <img
-        src={'/public/images/user.png'}
+        src={'/images/user.png'}
         alt={fullname}
         className="profileImage"
       />

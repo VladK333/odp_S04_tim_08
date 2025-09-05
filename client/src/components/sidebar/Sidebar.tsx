@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './Sidebar.css';
 import UserInfo from './UserInfo';
-//import DetailsButton from '../buttons/DetailsButton';
-//import DetailsForm from '../../forms/detailsForm/DetailsForm';
 import ToggleButton from '../buttons/ToggleButton';
+import { useAuth } from '../../hooks/auth/useAuthHook';
+import { AuthAPIService } from '../../api/auth/AuthAPIService';
+import LoginForm from '../auth/logInForm/LogInForm';
+
+const authService = new AuthAPIService();
 
 interface User {
   fullname: string;
@@ -12,116 +15,127 @@ interface User {
   messagesLeft: number;
 }
 
-interface SidebarProps {
-  user: User | null;
-  isOpen: boolean;
-  setUser?: React.Dispatch<React.SetStateAction<User | null>>; 
-}
-
 const guestUser: User = {
   fullname: 'Guest',
   email: '',
   isPremium: false,
-  messagesLeft: 20,
+  messagesLeft: 50,
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ user }) => {
+const Sidebar: React.FC = () => {
+  const { user, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  //const [showDetails, setShowDetails] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [showSignInForm, setShowSignInForm] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
-  const handleAuthClick = () => location.reload();
-  //const handleDetailsClick = () => setShowDetails(true);
-  //const handleCloseDetails = () => setShowDetails(false);
+  // Klik na Log In / Log Out dugme
+  const handleAuthClick = () => {
+    if (isAuthenticated) {
+      logout();
+    } else {
+      setShowLoginForm(true);
+    }
+  };
 
   const handleLoginClose = () => setShowLoginForm(false);
-  const handleRegisterClick = () => {
-    setShowLoginForm(false);
-    setShowSignInForm(true);
-  };
-  const handleSignInClose = () => setShowSignInForm(false);
-  const handleContinueAsGuest = () => setShowLoginForm(false);
 
-  const showOverlay = showLoginForm || showSignInForm;
-  const userToShow = user || guestUser;
- const isGuest = userToShow.fullname === 'Guest';
+  // Map AuthUser na tip koji UserInfo očekuje
+  const mappedUser: User = user
+    ? {
+        fullname: user.email, // ako želiš fullname, možeš ga ovde dodati
+        email: user.email,
+        isPremium: user.isPremium,
+        messagesLeft: user.isPremium ? Infinity : 50,
+      }
+    : guestUser;
 
-  return (
-    <>
-      <aside className="sidebar" style={{ width: isOpen ? 300 : 0, overflowX: 'hidden' }}>
-        <div className="topBar">
-          <button
-            onClick={handleAuthClick}
-            className="authButton"
-            aria-label={!isGuest ? 'Log out' : 'Log in'}
-            type="button"
-          >
-            {!isGuest ? 'Log Out' : 'Log In'}
-          </button>
-        </div>
+  const isGuest = mappedUser.fullname === 'Guest';
+  const showOverlay = showLoginForm;
 
-        <div className="userInfoWrapper">
-          <div style={{ opacity: isOpen ? 1 : 0, transition: 'opacity 0.3s ease', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <UserInfo
-              fullname={userToShow.fullname}
-              isPremium={userToShow.isPremium}
-              messagesLeft={userToShow.messagesLeft}
-            />
+return (
+  <>
+    {/* Sidebar */}
+    <aside
+      className="sidebar"
+      style={{ width: isOpen ? 300 : 0, overflowX: 'hidden', zIndex: 1000 }}
+    >
+      <div className="topBar">
+        <button
+          onClick={handleAuthClick}
+          className="authButton"
+          aria-label={!isGuest ? 'Log out' : 'Log in'}
+          type="button"
+        >
+          {!isGuest ? 'Log Out' : 'Log In'}
+        </button>
+      </div>
 
-            {/* {!isGuest && <DetailsButton onClick={handleDetailsClick} />} */}
-          </div>
-        </div>
-
-        {isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
-      </aside>
-
-      {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
-
-      {/* {showDetails && <DetailsForm user={userToShow} onClose={handleCloseDetails} />} */}
-
-      {showOverlay && (
+      <div className="userInfoWrapper">
         <div
-          className="overlay"
-          onClick={() => {
-            if (showLoginForm) setShowLoginForm(false);
-            else if (showSignInForm) setShowSignInForm(false);
+          style={{
+            opacity: isOpen ? 1 : 0,
+            transition: 'opacity 0.3s ease',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
-        />
-      )}
-
-      {/* {showLoginForm && (
-        <div className="loginWrapper">
-          <LoginForm
-            onClose={handleLoginClose}
-            onRegisterClick={handleRegisterClick}
-            onContinueAsGuest={handleContinueAsGuest}
-            onLoginSuccess={(user) => setCurrentUser(user)}
+        >
+          <UserInfo
+            fullname={mappedUser.fullname}
+            isPremium={mappedUser.isPremium}
+            messagesLeft={mappedUser.messagesLeft}
           />
         </div>
-      )} */}
+      </div>
 
-      {/* {showSignInForm && (
-        <div className="loginWrapper">
-          <SignInForm
-            onClose={handleSignInClose}
-            onBackToLogin={() => {
-              setShowSignInForm(false);
-              setShowLoginForm(true);
-            }}
-            onRegisterComplete={(newUser) => {
-              setCurrentUser(newUser);
-              setShowSignInForm(false);
-              setShowLoginForm(true);
-            }}
-          />
-        </div>
-      )} */}
-    </>
-  );
+      {isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
+    </aside>
+
+    {/* Toggle kada je sidebar zatvoren */}
+    {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
+
+    {/* Login forma i overlay (renderovati izvan sidebar-a) */}
+    {showLoginForm && (
+  <>
+    <div
+      className="overlay"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)', // zamagljuje sve
+        zIndex: 3000, // veći od navbar i sidebar
+      }}
+      onClick={handleLoginClose}
+    />
+    <div
+      className="loginWrapper"
+      style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 3100, // iznad overlay-a
+        width: '100%',
+        maxWidth: '400px',
+      }}
+    >
+      <LoginForm
+        authService={authService}
+        onClose={handleLoginClose}
+        onRegisterClick={() => {}}
+        onContinueAsGuest={() => setShowLoginForm(false)}
+      />
+    </div>
+  </>
+)}
+
+
+  </>
+);
+
+
 };
 
 export default Sidebar;
