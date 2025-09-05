@@ -23,7 +23,11 @@ const guestUser: User = {
   messagesLeft: 50,
 };
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onGuestChange?: (isGuest: boolean) => void; // callback za Navbar
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onGuestChange }) => {
   const { user, logout, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
@@ -34,6 +38,7 @@ const Sidebar: React.FC = () => {
   const handleAuthClick = () => {
     if (isAuthenticated) {
       logout();
+      if (onGuestChange) onGuestChange(true); // postaje guest
     } else {
       setAuthMode('login');
       setShowAuthForm(true);
@@ -44,7 +49,7 @@ const Sidebar: React.FC = () => {
 
   const mappedUser: User = user
     ? {
-        fullname: user.email, // možeš dodati fullname iz user objekta
+        fullname: user.email,
         email: user.email,
         isPremium: user.isPremium,
         messagesLeft: user.isPremium ? Infinity : 50,
@@ -55,7 +60,6 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Sidebar */}
       <aside
         className="sidebar"
         style={{ width: isOpen ? 300 : 0, overflowX: 'hidden', zIndex: 1000 }}
@@ -95,7 +99,6 @@ const Sidebar: React.FC = () => {
 
       {!isOpen && <ToggleButton isOpen={isOpen} toggleSidebar={toggleSidebar} />}
 
-      {/* Overlay i Auth forme */}
       {showAuthForm && (
         <>
           <div
@@ -125,18 +128,21 @@ const Sidebar: React.FC = () => {
                 authService={authService}
                 onClose={handleAuthClose}
                 onRegisterClick={() => setAuthMode('register')}
-                onContinueAsGuest={() => setShowAuthForm(false)}
+                onContinueAsGuest={() => {
+                  setShowAuthForm(false);
+                  if (onGuestChange) onGuestChange(true);
+                }}
               />
             ) : (
               <RegisterForm
                 authService={authService}
                 onClose={handleAuthClose}
                 onLoginClick={() => setAuthMode('login')}
-                onRegisterComplete={() => {
-                  // Opcionalno: automatski zatvori formu nakon registracije
+                onRegisterComplete={() => setShowAuthForm(false)}
+                onContinueAsGuest={() => {
                   setShowAuthForm(false);
+                  if (onGuestChange) onGuestChange(true);
                 }}
-                onContinueAsGuest={() => setShowAuthForm(false)}  //
               />
             )}
           </div>
