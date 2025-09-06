@@ -4,7 +4,7 @@ export interface IMessageAPIService {
   createMessage(
     text: string,
     isSentByAI: boolean,
-    sentTime: string,
+    sentTime: number,
     chatId: number, token: string
   ): Promise<MessageDto | undefined>;
 

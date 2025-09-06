@@ -155,10 +155,10 @@ export function ChatPage({ services }: ChatPageProps) {
       try {
         const replyText = await llmApi.sendMessage(text);
         const received: MessageDto = {
-          id: Date.now() + 1,
+          id: 0,
           text: replyText,
           isSentByAI: true,
-          sentTime: Date.now(),
+          sentTime: Date.now() / 1000,
           chatId: activeChat ? activeChat.id : -1,
         };
 
@@ -193,7 +193,7 @@ export function ChatPage({ services }: ChatPageProps) {
             id: Date.now() + 2,
             text: "Error: failed to get response from LLM.",
             isSentByAI: true,
-            sentTime: Date.now(),
+            sentTime: Date.now() / 1000,
             chatId: activeChat ? activeChat.id : -1,
           },
         ]);
@@ -222,7 +222,7 @@ export function ChatPage({ services }: ChatPageProps) {
         const sentResponse = await messageApi.createMessage(
           text,
           false,
-          new Date().toISOString(),
+          (Date.now() / 1000),
           activeChat.id,
           token
         );
@@ -231,7 +231,7 @@ export function ChatPage({ services }: ChatPageProps) {
           id: Date.now(),
           text,
           isSentByAI: false,
-          sentTime: Date.now(),
+          sentTime: Date.now() / 1000,
           chatId: activeChat.id,
         };
         setMessages((prev) => [...prev, sentMessage]);
@@ -241,7 +241,7 @@ export function ChatPage({ services }: ChatPageProps) {
         const aiResponse = await messageApi.createMessage(
           replyText,
           true,
-          new Date().toISOString(),
+          Date.now() / 1000,
           activeChat.id,
           token
         );
@@ -250,7 +250,7 @@ export function ChatPage({ services }: ChatPageProps) {
           id: Date.now() + 1,
           text: replyText,
           isSentByAI: true,
-          sentTime: Date.now(),
+          sentTime: Date.now() / 1000,
           chatId: activeChat.id,
         };
 

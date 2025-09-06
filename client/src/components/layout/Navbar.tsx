@@ -38,7 +38,7 @@ export function Navbar({ isAuthenticated, onCreate, onResetGuests, user }: Navba
             </div>
 
             <div className="flex items-center gap-3 px-3 py-1 rounded-xl bg-white/30 border border-blue-200">
-              <div className="text-sm">Messages left: <span className="font-semibold">55</span></div>
+              <div className="text-sm">Messages left: <span className="font-semibold">{user.messagesLeft}</span></div>
             </div>
 
             <button
