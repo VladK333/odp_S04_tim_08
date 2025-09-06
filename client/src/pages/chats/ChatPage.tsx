@@ -273,15 +273,15 @@ export function ChatPage({ services }: ChatPageProps) {
       }));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-200 via-white to-blue-200 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-20">
         <img
-          src="/bg.jpg"
+          src="/bg.gif"
           alt="background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
       </div>
 
       <Navbar
