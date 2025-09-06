@@ -9,7 +9,7 @@ export function InformacijeOKorisniku() {
 
   if (!token) return null;
 
-  const { id, korisnickoIme, uloga } = jwtDecode<JwtTokenClaims>(token);
+  const { id, email: korisnickoIme, isPremium: uloga } = jwtDecode<JwtTokenClaims>(token);
 
   const handleLogout = () => {
     ObrišiVrednostPoKljuču("authToken");

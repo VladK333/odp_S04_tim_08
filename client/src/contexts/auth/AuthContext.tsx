@@ -11,13 +11,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const decodeJWT = (token: string): JwtTokenClaims | null => {
     try {
         const decoded = jwtDecode<JwtTokenClaims>(token);
-        
+       
         // Proveri da li token ima potrebna polja
-        if (decoded.id && decoded.korisnickoIme && decoded.uloga) {
+        if (decoded.id !== 0 && decoded.email && decoded.isPremium !== undefined) {
             return {
                 id: decoded.id,
-                korisnickoIme: decoded.korisnickoIme,
-                uloga: decoded.uloga
+                email: decoded.email,
+                isPremium: decoded.isPremium
             };
         }
         
@@ -62,8 +62,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 setToken(savedToken);
                 setUser({
                     id: claims.id,
-                    korisnickoIme: claims.korisnickoIme,
-                    uloga: claims.uloga
+                    email: claims.email,
+                    isPremium: claims.isPremium
                 });
             } else {
                 ObrišiVrednostPoKljuču("authToken");
@@ -75,13 +75,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = (newToken: string) => {
         const claims = decodeJWT(newToken);
-        
+
         if (claims && !isTokenExpired(newToken)) {
             setToken(newToken);
             setUser({
                 id: claims.id,
-                korisnickoIme: claims.korisnickoIme,
-                uloga: claims.uloga
+                email: claims.email,
+                isPremium: claims.isPremium
             });
             SačuvajVrednostPoKljuču("authToken", newToken);
         } else {

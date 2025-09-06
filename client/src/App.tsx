@@ -3,22 +3,20 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { authApi } from "./api_services/auth/AuthAPIService";
 import { ProtectedRoute } from "./components/protected_route/ProtectedRoute";
-import PrijavaStranica from "./pages/auth/PrijavaStranica";
-import RegistracijaStranica from "./pages/auth/RegistracijaStranica";
-import KontrolnaTablaUserStranica from "./pages/kontrolna_tabla/KontrolnaTablaUserStranica";
-import KontrolnaTablaAdminStranica from "./pages/kontrolna_tabla/KontrolnaTablaAdminStranica";
 import NotFoundStranica from "./pages/not_found/NotFoundPage";
-import { usersApi } from "./api_services/users/UsersAPIService";
+import type { IAuthAPIService } from "./api/auth/IAuthAPIService";
+import { AuthAPIService } from "./api/auth/AuthAPIService";
+import { AuthPage } from "./pages/auth/AuthPage";
+
+const authApi: IAuthAPIService = new AuthAPIService();
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<PrijavaStranica authApi={authApi} />} />
-      <Route path="/register" element={<RegistracijaStranica authApi={authApi} />} />
+      <Route path="/" element={<AuthPage authApi={authApi} />} />
       <Route path="/404" element={<NotFoundStranica />} />
-
+{/* 
         <Route
           path="/user-dashboard"
           element={
@@ -26,16 +24,7 @@ function App() {
               <KontrolnaTablaUserStranica />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/admin-dashboard"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <KontrolnaTablaAdminStranica usersApi={usersApi} /> 
-            </ProtectedRoute>
-          }
-        />
+        /> */}
 
         {/* Preusmerava na dashboard kao default rutu */}
         <Route path="/" element={<Navigate to="/login" replace />} />

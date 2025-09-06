@@ -1,5 +1,5 @@
 export type AuthUser = {
     id: number;
-    korisnickoIme: string;
-    uloga: string;
+    email: string;
+    isPremium: boolean;
 }
