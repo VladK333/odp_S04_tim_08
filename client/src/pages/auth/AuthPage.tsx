@@ -20,11 +20,11 @@ export function AuthPage({ authApi }: AuthPageProps) {
     <div className="min-h-screen flex items-center justify-center">
       <div className="absolute inset-0 -z-20">
         <img
-          src="/bg2.jpg"
+          src="/bg.gif"
           alt="background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-lg"></div>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
       </div>
 
       {/* Card */}
