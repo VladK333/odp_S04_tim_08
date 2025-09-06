@@ -40,7 +40,7 @@ const messageService: IMessageService = new MessageService(messageRepository, us
 // WebAPI routes
 const authController = new AuthController(authService);
 const userController = new UserController(userService);
-const chatController = new ChatController(chatService);
+const chatController = new ChatController(chatService, messageService);
 const messageController = new MessageController(messageService);
 
 // Registering routes

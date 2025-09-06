@@ -2,14 +2,17 @@ import { Request, Response, Router } from "express";
 import { IChatService } from "../../Domain/services/chats/IChatService";
 import { ChatDto } from "../../Domain/DTOs/chats/ChatDto";
 import { authenticate } from "../../Middlewares/authentification/AuthMiddleware";
+import { IMessageService } from "../../Domain/services/messages/IMessageService";
 
 export class ChatController {
   private router: Router;
   private chatService: IChatService;
+  private messageService: IMessageService;
 
-  constructor(chatService: IChatService) {
+  constructor(chatService: IChatService, messageService: IMessageService) {
     this.router = Router();
     this.chatService = chatService;
+    this.messageService = messageService;
     this.initializeRoutes();
   }
 
@@ -42,9 +45,12 @@ export class ChatController {
   private async deleteChat(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const deleted = await this.chatService.deleteById(parseInt(id));
+      const chatId = parseInt(id, 10);
+
+      const msg = await this.messageService.deleteByChatId(chatId)
+      const deleted = await this.chatService.deleteById(chatId);
       res
-        .status(deleted ? 200 : 404)
+        .status(deleted && msg ? 200 : 404)
         .json({ success: deleted, message: deleted ? "Chat has been deleted" : "Chat not found" });
     } catch (error) {
       res.status(500).json({ success: false, message: error });
