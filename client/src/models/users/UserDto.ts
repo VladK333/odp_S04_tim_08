@@ -1,11 +1,9 @@
-export class UserDto {
-  public constructor(
-    public id: number = 0,
-    public fullname: string = '',
-    public email: string = '',
-    public password: string = '',
-    public isPremium: boolean = false,
-    public messagesLeft: number = 50,
-    public firstMessageSentForPeriod: number = Date.now()
-  ) {}
+export interface UserDto {
+  id: number;
+  fullname: string;
+  email: string;
+  password: string;
+  isPremium: boolean;
+  messagesLeft: number;
+  firstMessageSentForPeriod: number;
 }
