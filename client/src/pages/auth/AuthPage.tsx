@@ -13,26 +13,18 @@ export function AuthPage({ authApi }: AuthPageProps) {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if(isAuthenticated)
-      window.location.href = "/chat";
-  }, [isAuthenticated])
+    if (isAuthenticated) window.location.href = "/chat";
+  }, [isAuthenticated]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-white to-blue-200 relative overflow-hidden">
-      {/* Sakura Petals Background (anime feel) */}
-      {/* Falling Sakura Petals */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-4 h-5 bg-pink-300 rounded-full opacity-70 animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${8 + Math.random() * 5}s`,
-              animationDelay: `${Math.random() * 10}s`,
-            }}
-          ></div>
-        ))}
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="absolute inset-0 -z-20">
+        <img
+          src="/bg2.jpg"
+          alt="background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-lg"></div>
       </div>
 
       {/* Card */}

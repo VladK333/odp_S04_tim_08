@@ -15,6 +15,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<AuthPage authApi={authApi} />} />
+      <Route path="/auth" element={<AuthPage authApi={authApi} />} />
       <Route path="/404" element={<NotFoundStranica />} />
 {/* 
         <Route
