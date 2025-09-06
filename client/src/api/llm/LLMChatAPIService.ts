@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { ILLMChatAPIService } from "./ILLMChatAPIService";
 
-const API_URL: string = import.meta.env.VITE_LM_API_URL as string;
+const API_URL: string = import.meta.env.VITE_LM_API_URL;
 
 export class LLMChatAPIService implements ILLMChatAPIService {
   async sendMessage(poruka: string): Promise<string> {

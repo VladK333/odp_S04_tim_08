@@ -14,7 +14,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
     const response = await authApi.prijava(email, password);
     if (response.success && response.data) {
       login(response.data);
-      window.location.href = "/chat";
+      window.location.href = "/";
     } else {
       setError(response.message || "Login failed.");
       setEmail("");

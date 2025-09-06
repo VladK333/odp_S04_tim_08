@@ -23,7 +23,7 @@ export function RegisterForm({ authApi }: AuthFormProps) {
       const response = await authApi.registracija(fullname, email, password, isPremium);
       if (response.success && response.data) {
             login(response.data);
-            window.location.href = "/chat";
+            window.location.href = "/";
       } else {
         setError(response.message || "Registration failed.");
         setFullname("");

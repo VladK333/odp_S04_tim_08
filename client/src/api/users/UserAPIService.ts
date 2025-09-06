@@ -1,13 +1,13 @@
 import axios from "axios";
 import type { IUserAPIService } from "./IUserAPIService";
-import type { User } from "../../types/User";
+import type { UserDto } from "../../models/users/UserDto";
 
 const API_URL: string = import.meta.env.VITE_API_URL + "users";
 
-export const userApi: IUserAPIService = {
-  async getUserById(id: number, token: string): Promise<User | undefined> {
+export class UserAPIService implements IUserAPIService {
+  async getUserById(id: number, token: string): Promise<UserDto | undefined> {
     try {
-      const res = await axios.get<{ success: boolean; data: User }>(
+      const res = await axios.get<{ success: boolean; data: UserDto }>(
         `${API_URL}/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -16,5 +16,5 @@ export const userApi: IUserAPIService = {
       console.error("Greška pri dohvatanju korisnika:", error);
       return undefined;
     }
-  },
+  }
 };

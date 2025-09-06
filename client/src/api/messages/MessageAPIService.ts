@@ -4,7 +4,7 @@ import type { IMessageAPIService } from "./IMessageAPIService";
 
 const API_URL: string = import.meta.env.VITE_API_URL + "messages";
 
-export const messageApi: IMessageAPIService = {
+export class MessageAPIService implements IMessageAPIService {
   async createMessage(
     text: string,
     isSentByAI: boolean,
@@ -22,7 +22,7 @@ export const messageApi: IMessageAPIService = {
       console.error("Greška pri kreiranju poruke:", error);
       return undefined;
     }
-  },
+  }
 
   async getMessagesByChatId(chatId: number, token: string): Promise<MessageDto[]> {
     try {
@@ -35,7 +35,7 @@ export const messageApi: IMessageAPIService = {
       console.error("Greška pri dohvatanju poruka:", error);
       return [];
     }
-  },
+  }
 
   async deleteMessagesByChatId(chatId: number, token: string): Promise<boolean> {
     try {
@@ -48,5 +48,5 @@ export const messageApi: IMessageAPIService = {
       console.error("Greška pri brisanju poruka:", error);
       return false;
     }
-  },
+  }
 };

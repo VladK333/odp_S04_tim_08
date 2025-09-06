@@ -4,7 +4,7 @@ import type { IChatAPIService } from "./IChatAPIService ";
 
 const API_URL: string = import.meta.env.VITE_API_URL + "chats";
 
-export const chatApi: IChatAPIService = {
+export class ChatAPIService implements IChatAPIService {
   async createChat(name: string, userId: number, token: string): Promise<ChatDto | undefined> {
     try {
       const res = await axios.post<ChatDto>(
@@ -17,7 +17,7 @@ export const chatApi: IChatAPIService = {
       console.error("Greška pri kreiranju četa:", error);
       return undefined;
     }
-  },
+  }
 
   async getUserChats(userId: number, token: string): Promise<ChatDto[]> {
     try {
@@ -30,7 +30,7 @@ export const chatApi: IChatAPIService = {
       console.error("Greška pri dohvatanju čatova:", error);
       return [];
     }
-  },
+  }
 
   async deleteChat(id: number, token: string): Promise<boolean> {
     try {
@@ -43,5 +43,5 @@ export const chatApi: IChatAPIService = {
       console.error("Greška pri brisanju četa:", error);
       return false;
     }
-  },
+  }
 };

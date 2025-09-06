@@ -1,5 +1,5 @@
-import type { User } from "../../types/User";
+import type { UserDto } from "../../models/users/UserDto";
 
 export interface IUserAPIService {
-  getUserById(id: number, token: string): Promise<User | undefined>;
+  getUserById(id: number, token: string): Promise<UserDto | undefined>;
 }
