@@ -38,7 +38,7 @@ export class AuthService implements IAuthService {
     const hashedPassword = await bcrypt.hash(password, this.saltRounds);
 
     const newUser = await this.userRepository.create(
-      new User(0, fullname, email, hashedPassword, isPremium, MESSAGE_LIMIT, Date.now())
+      new User(0, fullname, email, hashedPassword, isPremium, MESSAGE_LIMIT, Date.now() / 1000)
     );
 
     if (newUser.id !== 0) {
