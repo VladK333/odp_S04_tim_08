@@ -25,18 +25,24 @@ export class MessageService implements IMessageService {
 
     if (user.id === 0) return new MessageDto();
 
-    if (user.isPremium === false) {
-      const currentTime: number = Date.now() / 1000; // unix timestamp in seconds
+    if (!user.isPremium) {
+      const currentTime: number = Math.floor(Date.now() / 1000); // unix timestamp in seconds
       const is24hLimitPassed: boolean =
-        Math.abs(user.firstMessageSentForPeriod - currentTime) <= 24 * 60 * 60; // ???
+        currentTime - user.firstMessageSentForPeriod >= 24 * 60 * 60;
 
-      if (user.messagesLeft - 1 < 0 || !is24hLimitPassed)
-        return new MessageDto();
-
+      // reset if 24h passed
       if (is24hLimitPassed) {
         user.messagesLeft = MESSAGE_LIMIT;
         user.firstMessageSentForPeriod = currentTime;
       }
+
+      // now check if user has messages left
+      if (user.messagesLeft <= 0) {
+        return new MessageDto(); // can't send more
+      }
+
+      // decrement messagesLeft
+      user.messagesLeft -= 1;
     }
 
     const created = await this.messageRepository.create(message);
@@ -51,7 +57,7 @@ export class MessageService implements IMessageService {
         user.email,
         user.password,
         user.isPremium,
-        user.messagesLeft - 1,
+        user.messagesLeft,
         user.firstMessageSentForPeriod
       )
     );

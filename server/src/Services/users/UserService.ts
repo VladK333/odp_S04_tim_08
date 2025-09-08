@@ -52,6 +52,7 @@ export class UserService implements IUserService {
       userDto.firstMessageSentForPeriod
     );
     const updated = await this.userRepository.update(user);
+    
     return new UserDto(
       updated.id,
       updated.fullname,

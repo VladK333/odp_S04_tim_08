@@ -199,6 +199,8 @@ export function ChatPage({ services }: ChatPageProps) {
         ]);
       }
 
+      refreshUser();
+
       return;
     }
 

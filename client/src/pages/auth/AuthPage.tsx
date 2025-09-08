@@ -13,7 +13,7 @@ export function AuthPage({ authApi }: AuthPageProps) {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) window.location.href = "/chat";
+    if (isAuthenticated) window.location.href = "/";
   }, [isAuthenticated]);
 
   return (
